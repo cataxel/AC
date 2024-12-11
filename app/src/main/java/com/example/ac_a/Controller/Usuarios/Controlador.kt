@@ -3,7 +3,7 @@ package org.ac.Controller.Usuarios
 import com.example.ac_a.APIRespuesta
 import org.ac.Model.Usuarios.Profile
 import org.ac.Model.Usuarios.Usuario
-import org.ac.service.Usuarios.interfaces.Usuarios
+import org.ac.service.Usuarios.Usuarios
 import java.io.File
 
 class UsuariosController(private val usuariosService: Usuarios) {
@@ -49,7 +49,7 @@ class ProfileController(private val usuariosService: Usuarios) {
         onError: (String) -> Unit
     ) {
         try {
-            // Llamar al servicio para crear el perfil
+            // Aquí puedes llamar al servicio para crear el perfil, asegurándote de pasar la imagen si existe
             val respuesta = usuariosService.crearPerfil(perfil, imagen)
 
             if (respuesta.estado) {
@@ -64,4 +64,21 @@ class ProfileController(private val usuariosService: Usuarios) {
             onError("Error al comunicarse con el servidor: ${e.message}")
         }
     }
+
+    suspend fun ObtenerPerfil(usuarioId: String): Pair<Usuario, Profile>? {
+        val perfilRespuesta = usuariosService.obtenerPerfil(usuarioId)
+
+        // Verificar si el perfil fue encontrado
+        if (perfilRespuesta.estado && perfilRespuesta.data != null) {
+            val usuario = usuariosService.obtenerUsuarioId(usuarioId)
+
+            if (usuario.estado && usuario.data != null) {
+                return Pair(usuario.data, perfilRespuesta.data)
+            }
+        }
+
+        // Si no se encuentra el perfil, devuelve null o maneja el caso específico
+        return null
+    }
+
 }

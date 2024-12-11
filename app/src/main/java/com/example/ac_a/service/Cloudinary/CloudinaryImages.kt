@@ -10,7 +10,9 @@ import kotlinx.serialization.json.Json
 import org.ac.APIConf.APIConf
 import org.ac.APIConf.NetworkClient
 import com.example.ac_a.Model.Images.CloudinaryResponse
+import okhttp3.MultipartBody
 import org.ac.service.Cloudinary.interfaces.CloudinaryInterface
+import java.io.File
 
 class CloudinaryImages : CloudinaryInterface {
     private val client = NetworkClient.httpClient
@@ -24,7 +26,8 @@ class CloudinaryImages : CloudinaryInterface {
             // Deserializa la respuesta completa en CloudinaryResponse
             val responseBody = response.bodyAsText()
             Json.decodeFromString(responseBody)
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             // Manejar errores y devolver una respuesta vacía o con un estado de error
             CloudinaryResponse(
                 estado = false,
@@ -33,4 +36,5 @@ class CloudinaryImages : CloudinaryInterface {
             )
         }
     }
+
 }

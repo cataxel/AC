@@ -14,12 +14,13 @@ import io.ktor.client.call.body
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.http.Headers
+import io.ktor.http.HttpStatusCode
 import org.ac.Model.Usuarios.Profile
 import org.ac.Model.Usuarios.Usuario
 import org.ac.service.Usuarios.interfaces.Usuarios
 import java.io.File
 
-class Usuario(private val client:HttpClient):Usuarios {
+class Usuarios(private val client:HttpClient):Usuarios {
     override suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>> {
         val response: HttpResponse = client.get(APIConf.USUARIOS_ENDPOINT) {
             contentType(ContentType.Application.Json)
@@ -43,26 +44,30 @@ class Usuario(private val client:HttpClient):Usuarios {
 
     override suspend fun crearPerfil(perfil: Profile, imagen: File?): APIRespuesta<Profile> {
         return try {
+            val formData = formData {
+                append("carrera", perfil.carrera)
+                append("id_user", perfil.id_user)
+                append("telefono", perfil.telefono)
+                append("direccion", perfil.direccion)
+                append("numero_control", perfil.numero_control.toString())
+
+                imagen?.let {
+                    append("file", it.readBytes(), Headers.build {
+                        append(HttpHeaders.ContentType, ContentType.Image.JPEG.toString())
+                        append(HttpHeaders.ContentDisposition, "filename=\"${it.name}\"")
+                    })
+                }
+            }
+            // Previsualiza los datos antes de enviarlos
+            /*
+            formData.forEach { part ->
+                println("Form part: ${part.key} = ${part.value}")
+            }*/
+
             val response: HttpResponse = client.submitFormWithBinaryData(
                 url = APIConf.PERFIL_ENDPOINT,
-                formData = formData {
-                    // Agregar los campos del perfil
-                    append("carrera", perfil.carrera)
-                    append("id_user", perfil.id_user)
-                    append("telefono", perfil.telefono)
-                    append("direccion", perfil.direccion)
-                    append("numero_control", perfil.numero_control.toString())
-
-                    // Agregar la imagen si está disponible
-                    imagen?.let {
-                        append("file", it.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, ContentType.Image.JPEG.toString()) // Cambia si el tipo de archivo es distinto
-                            append(HttpHeaders.ContentDisposition, "filename=\"${it.name}\"")
-                        })
-                    }
-                }
+                formData = formData
             )
-
             // Procesar la respuesta desde el servidor
             val apiRespuesta = response.body<APIRespuesta<Profile>>()
             apiRespuesta
@@ -75,4 +80,32 @@ class Usuario(private val client:HttpClient):Usuarios {
             )
         }
     }
+
+    override suspend fun obtenerPerfil(usuarioId:String): APIRespuesta<Profile> {
+        return try {
+            val response: HttpResponse = client.get("${APIConf.PERFIL_ENDPOINT}$usuarioId") {
+                contentType(ContentType.Application.Json)
+            }
+
+            if (response.status == HttpStatusCode.NotFound) {
+                return APIRespuesta(
+                    estado = false,
+                    mensaje = "Usuario no encontrado",
+                    data = null
+                )
+            }
+
+            val responseBody = response.bodyAsText()
+            Json.decodeFromString<APIRespuesta<Profile>>(responseBody)
+        } catch (e: Exception) {
+            // Manejo de excepciones
+            println("Error al obtener el perfil: ${e.localizedMessage}")
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al obtener el perfil: ${e.localizedMessage}",
+                data = null
+            )
+        }
+    }
+
 }

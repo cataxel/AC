@@ -18,18 +18,22 @@ import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import org.ac.APIConf.APIConf
 import org.ac.Model.Usuarios.TokenSession
-import org.ac.service.Usuarios.Usuario
+import org.ac.service.Usuarios.Usuarios
 import org.ac.sessionManager.interfaces.SessionManager
 
 
 class UserSessionManager(
     private val context: Context,
     private val client:HttpClient,
-    private val usuarioServicio: Usuario
+    private val usuarioServicio: Usuarios
 ):SessionManager {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_session",Context.MODE_PRIVATE)
     override fun isUserLogginIn(): Boolean {
         return sharedPreferences.contains("accessToken")
+    }
+
+    override fun getUserId(): String {
+        return sharedPreferences.getString("user_guid","")?:""
     }
 
     override fun getUserToken(): String {

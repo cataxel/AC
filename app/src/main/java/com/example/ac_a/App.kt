@@ -23,13 +23,15 @@ import com.example.ac_a.Views.BottomNavigationBar
 import com.example.ac_a.Views.DrawerContent
 import com.example.ac_a.Views.Home.Home
 import com.example.ac_a.Views.Usuarios.Profile
-import org.ac.service.Usuarios.Usuario
+import org.ac.Controller.Usuarios.ProfileController
+import org.ac.service.Usuarios.Usuarios
 import org.ac.sessionManager.interfaces.SessionManager
 
 @Composable
 fun App(sessionManager: SessionManager) {
-    val usuariosService = remember { Usuario(NetworkClient.httpClient) }
+    val usuariosService = remember { Usuarios(NetworkClient.httpClient) }
     val controller = remember { UsuariosController(usuariosService) }
+    val controllerPerfil = remember { ProfileController(usuariosService) }
 
     var navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -70,7 +72,10 @@ fun App(sessionManager: SessionManager) {
                 ) {
                     NavHost(navController = navController, startDestination = Navegation.Home.name) {
                         composable(Navegation.Home.name) { Home() }
-                        composable(Navegation.Home.name) { Profile() }
+                        composable(Navegation.Profile.name) { Profile(
+                            controllerPerfil,
+                            usuarioId = sessionManager.getUserId()
+                        ) }
                     }
                 }
 

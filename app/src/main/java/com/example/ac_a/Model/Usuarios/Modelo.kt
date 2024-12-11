@@ -1,6 +1,7 @@
 package org.ac.Model.Usuarios
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class Rol(
@@ -41,5 +42,5 @@ data class TokenSession(
     val user_guid: String,
     val refresh: String,
     val access: String,
-    val rol: String
+    @Transient val rol: String = ""
 )

@@ -50,16 +50,16 @@ import androidx.navigation.compose.composable
 import com.example.ac_a.Controller.loginLogout.Controlador
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
-import org.ac.service.Usuarios.Usuario
+import org.ac.service.Usuarios.Usuarios
 
 
 class LoginActivity : ComponentActivity() {
 
-    lateinit var usuarioService: Usuario
+    lateinit var usuarioService: Usuarios
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContent {
-            usuarioService = Usuario(NetworkClient.httpClient)
+            usuarioService = Usuarios(NetworkClient.httpClient)
             val navController = rememberNavController()
             NavHost(navController = navController, startDestination = "Login") {
                 composable("Login") {
@@ -73,17 +73,24 @@ class LoginActivity : ComponentActivity() {
 }
 
 @Composable
-fun Login(navController: NavController, usuarioServicio:Usuario){
+fun Login(navController: NavController, usuarioServicio:Usuarios){
     val imagenes = remember { CloudinaryImages() }
     val photoUrls = remember { mutableStateListOf<String>() }
     var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        val photos = ImagenesControlador(imagenes).listarImagenes().data
-        photos?.let {
-            photoUrls.addAll(it.map {loginImage -> loginImage.url})
+        try {
+            val photos = ImagenesControlador(imagenes).listarImagenes().data
+            photos?.let {
+                photoUrls.addAll(it.map { loginImage -> loginImage.url })
+            }
+            errorMessage = null
+        } catch (e: Exception) {
+            errorMessage = e.message
+        } finally {
+            isLoading = false
         }
-        isLoading = false
     }
     if (isLoading){
         CircularProgressIndicator()
@@ -96,7 +103,7 @@ fun Login(navController: NavController, usuarioServicio:Usuario){
 }
 
 @Composable
-fun LoginOverlay(navController: NavController, usuarioServicio:Usuario) {
+fun LoginOverlay(navController: NavController, usuarioServicio:Usuarios) {
     val context = LocalContext.current
     val sessionManager = UserSessionManager(context, NetworkClient.httpClient, usuarioServicio)
     val coroutineScope = rememberCoroutineScope()

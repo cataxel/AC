@@ -75,7 +75,7 @@ fun BottomNavigationBar(navController: NavController){
                 onClick = {navController.navigate(Navegation.Home.name)}
             ) { Icon(Icons.Default.Home, contentDescription = "Inicio") }
             IconButton(
-                onClick = {navController.navigate(Navegation.Profile)}
+                onClick = {navController.navigate(Navegation.Profile.name)}
             ) { Icon(Icons.Default.Person, contentDescription = "Perfil") }
         }
     )

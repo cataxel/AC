@@ -3,11 +3,11 @@ package com.example.ac_a.Controller.loginLogout
 import com.example.ac_a.APIRespuesta
 import com.example.ac_a.Model.Images.LoginImage
 import com.example.ac_a.service.Cloudinary.CloudinaryImages
-import org.ac.sessionManager.interfaces.SessionManager
+import org.ac.sessionManager.UserSessionManager
 
 
 class Controlador(
-    private val sessionManager: SessionManager
+    private val sessionManager: UserSessionManager
 ) {
     suspend fun Login(email:String, password:String):APIRespuesta<Unit>{
         return try {
