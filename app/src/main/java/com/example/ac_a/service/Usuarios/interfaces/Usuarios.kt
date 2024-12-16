@@ -7,6 +7,7 @@ import org.ac.Model.Usuarios.Usuario
 import java.io.File
 
 interface Usuarios {
+    suspend fun obtenerRol(): APIRespuesta<List<Rol>>
     suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>>
     suspend fun obtenerUsuarioId(usuarioId:String): APIRespuesta<Usuario>
     suspend fun crearUsuario(usuario: Usuario): APIRespuesta<Usuario>

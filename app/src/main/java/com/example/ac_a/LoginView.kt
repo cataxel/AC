@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,6 +41,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -48,8 +54,11 @@ import org.ac.sessionManager.UserSessionManager
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.ac_a.Controller.loginLogout.Controlador
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
+import org.ac.Model.Usuarios.Rol
+import org.ac.Model.Usuarios.Usuario
 import org.ac.service.Usuarios.Usuarios
 
 
@@ -65,6 +74,9 @@ class LoginActivity : ComponentActivity() {
                 composable("Login") {
 
                     Login(navController = navController,usuarioService)
+                }
+                composable("register") {
+                    register(navController = navController, usuarioService)
                 }
                 //composable("Registrar") { Register(navController = navController) }
             }
@@ -180,6 +192,105 @@ fun PhotoCarousel(photoUrls: List<String>){
         LaunchedEffect(key1 = currentImageIndex) {
             delay(5000) // Delay for 5 seconds
             currentImageIndex = (currentImageIndex + 1) % photoUrls.size
+        }
+    }
+}
+
+
+
+
+
+@Composable
+fun register(navController: NavController, usuarioServicio:Usuarios) {
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var roles = remember { mutableStateListOf<Rol>() }
+
+    LaunchedEffect(Unit) {
+        try {
+            val getRoles = usuarioServicio.obtenerRol()
+            getRoles.data?.map { roles }
+            errorMessage = null
+        } catch (e: Exception) {
+            // Handle exception
+        }
+    }
+    Text("$roles")
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .background(Color.White.copy(alpha = 0.9f))
+                .padding(32.dp)
+                .clip(RoundedCornerShape(16.dp))
+        ) {
+            IconButton(onClick = { navController.navigate("login") }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+            }
+            Text(text = "Registrar Usuario", style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            var username by remember { mutableStateOf("") }
+            var correo by remember { mutableStateOf("") }
+            var password by remember { mutableStateOf("") }
+
+            var rolValue by remember { mutableStateOf(false) }
+            var rolMensaje by remember { mutableStateOf("") }
+            var rol by remember { mutableStateOf("") }
+
+            val corrutinaScope = rememberCoroutineScope()
+
+            suspend fun submitForm(){
+                var usuario = Usuario(id="", username, correo, password, id_Rol="")
+            }
+
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Usuario") }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = correo,
+                onValueChange = { correo = it },
+                label = { Text("Correo") },
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                visualTransformation = PasswordVisualTransformation()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = rolMensaje,
+                onValueChange = { rolMensaje = it },
+                label = { Text("Mensaje de Rol") },
+            )
+            Button(onClick = {
+                if(rolValue){rolValue=false}
+                else if(rolMensaje=="Rol"){ rolValue = true }
+            }
+            ){
+                if (rolValue){
+                    Text("v")
+                } else{
+                    Text("^")
+                }
+            }
+            if(rolValue){
+                //
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                //
+            }) {
+                Text("Registrar")
+            }
         }
     }
 }

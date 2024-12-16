@@ -13,14 +13,27 @@ import com.example.ac_a.APIRespuesta
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode
+import kotlinx.serialization.encodeToString
 import org.ac.Model.Usuarios.Profile
+import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.Usuario
 import org.ac.service.Usuarios.interfaces.Usuarios
 import java.io.File
 
 class Usuarios(private val client:HttpClient):Usuarios {
+    override suspend fun obtenerRol(): APIRespuesta<List<Rol>> {
+        val response: HttpResponse = client.get(APIConf.ROLES_ENDPOINT) {
+            contentType(ContentType.Application.Json)
+        }
+        val responseBody = response.bodyAsText()
+        // Decodifica el JSON a APIRespuesta<List<Usuario>>
+        return Json.decodeFromString<APIRespuesta<List<Rol>>>(responseBody)
+    }
+
     override suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>> {
         val response: HttpResponse = client.get(APIConf.USUARIOS_ENDPOINT) {
             contentType(ContentType.Application.Json)
@@ -39,7 +52,23 @@ class Usuarios(private val client:HttpClient):Usuarios {
     }
 
     override suspend fun crearUsuario(usuario: Usuario): APIRespuesta<Usuario> {
-        TODO("Not yet implemented")
+        return try {
+
+
+            val response: HttpResponse = client.post(APIConf.PERFIL_ENDPOINT){
+                contentType(ContentType.Application.Json)
+                setBody(Json.encodeToString(usuario))
+            }
+            val apiRespuesta = response.body<APIRespuesta<Usuario>>()
+            apiRespuesta
+        }catch (e: Exception){
+            // Manejo de errores
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al crear el usuario: ${e.message}",
+                data = null
+            )
+        }
     }
 
     override suspend fun crearPerfil(perfil: Profile, imagen: File?): APIRespuesta<Profile> {

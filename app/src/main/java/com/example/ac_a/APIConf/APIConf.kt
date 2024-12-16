@@ -12,6 +12,7 @@ import io.ktor.serialization.kotlinx.json.json
 
 object APIConf {
     const val BASE_URL = "https://backendac-w661.onrender.com"
+    const val ROLES_ENDPOINT = "$BASE_URL/roles/"
     const val USUARIOS_ENDPOINT = "$BASE_URL/usuarios/"
     const val PERFIL_ENDPOINT = "$BASE_URL/perfiles/"
     const val LOGIN_ENDPOINT = "$BASE_URL/login/"
