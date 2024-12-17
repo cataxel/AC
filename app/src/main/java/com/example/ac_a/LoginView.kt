@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,11 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -78,8 +80,8 @@ class LoginActivity : ComponentActivity() {
 
                     Login(navController = navController,usuarioService)
                 }
-                composable("register") {
-                    register(navController = navController, usuarioService)
+                composable("Register") {
+                    Register(navController = navController, usuarioService)
                 }
                 //composable("Registrar") { Register(navController = navController,usuarioService) }
             }
@@ -169,7 +171,7 @@ fun LoginOverlay(navController: NavController, usuarioServicio:Usuarios) {
                 Text("Iniciar Sesión")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { navController.navigate("register") }) {
+            Button(onClick = { navController.navigate("Register") }) {
                 Text("Registrar")
             }
         }
@@ -204,7 +206,7 @@ fun PhotoCarousel(photoUrls: List<String>){
 
 
 @Composable
-fun register(navController: NavController, usuarioServicio:Usuarios) {
+fun Register(navController: NavController, usuarioServicio:Usuarios) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val roles = remember { mutableStateListOf<Rol>() }
     var isLoading by remember { mutableStateOf(false) }
@@ -237,9 +239,9 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
 
 
             Spacer(modifier = Modifier.height(16.dp))
-            var nombre by remember { mutableStateOf("Beto") }
-            var correo by remember { mutableStateOf("Beto@gmail.com") }
-            var contraseña by remember { mutableStateOf("admin123") }
+            var nombre by remember { mutableStateOf("") }
+            var correo by remember { mutableStateOf("") }
+            var contraseña by remember { mutableStateOf("") }
 
             var rolValue by remember { mutableStateOf(false) }
             var rolMensaje by remember { mutableStateOf("") }
@@ -315,7 +317,7 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
                         ) {
                             roles.forEach { roles ->
                                 DropdownMenuItem(
-                                    text = { Text("${roles.nombre}") },
+                                    text = { Text(roles.nombre) },
                                     onClick = {
                                         selectedOption = roles  // Actualiza la opción seleccionada
                                         expanded = false  // Cierra el menú desplegable
@@ -331,6 +333,7 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
                 Spacer(modifier = Modifier.height(16.dp))
                 val context = LocalContext.current
                 val sessionManager = UserSessionManager(context, NetworkClient.httpClient, usuarioServicio)
+                var mensaje by remember { mutableStateOf("") }
                 Button(onClick = {
                     isLoading2 = true
                     corrutinaScope.launch {
@@ -345,16 +348,14 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
                             }
 
                         } else{
-                            var mensaje = "Error al crear usuario\n"
                             isLoading2 = false
-                            if(nombre=="")
-                                mensaje += "Se requiere Nombre\n"
-                            if(correo=="")
-                                mensaje += "Se requiere Correo\n"
-                            if(contraseña=="")
-                                mensaje += "Se requiere Contraseña\n"
-
-                            Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
+                            mensaje = "No se puede craer el Usuario"
+                            if (nombre == "")
+                                mensaje += "\nSe requiere Nombre"
+                            if (correo == "")
+                                mensaje += "\nSe requiere Correo"
+                            if (contraseña == "")
+                                mensaje += "\nSe requiere Contraseña"
                         }
                     }
 
@@ -363,8 +364,32 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
                 }
                 if (isLoading2){
                     CircularProgressIndicator()
+
                 }
+                if (mensaje!="")
+                    if(SimpleAlertDialog(mensaje))
+                        mensaje=""
+
             }
         }
     }
+}
+
+
+@Composable
+fun SimpleAlertDialog(mensaje:String):Boolean {
+    var showDialog by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = { showDialog = true }, // Cierra el diálogo al tocar fuera
+        title = { Text(text = "Error al Crear Usuario") },
+        text = { Text(mensaje) },
+        confirmButton = {
+            TextButton(onClick = { showDialog = true }) {
+                Text("Aceptar")
+            }
+        }
+    )
+
+    return showDialog
 }
