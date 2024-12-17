@@ -13,14 +13,14 @@ import com.example.ac_a.APIRespuesta
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import org.ac.Model.Usuarios.Profile
 import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.Usuario
+import org.ac.Model.Usuarios.UsuarioRespuesta
 import org.ac.service.Usuarios.interfaces.Usuarios
 import java.io.File
 
@@ -30,9 +30,20 @@ class Usuarios(private val client:HttpClient):Usuarios {
             contentType(ContentType.Application.Json)
         }
         val responseBody = response.bodyAsText()
-        // Decodifica el JSON a APIRespuesta<List<Usuario>>
-        return Json.decodeFromString<APIRespuesta<List<Rol>>>(responseBody)
+        // Decodificar el JSON de la respuesta como un JsonObject
+        val jsonObject = Json.parseToJsonElement(responseBody).jsonObject
+        // Extraer el campo `results` del JSON
+        val resultsJson = jsonObject["results"] ?: throw IllegalStateException("No se encontró el campo 'results'")
+        // Deserializar `results` como una lista de roles
+        val roles = Json.decodeFromJsonElement<List<Rol>>(resultsJson)
+        // Crear manualmente un objeto APIRespuesta con los datos extraídos
+        return APIRespuesta(
+            estado = true, // Asume que la operación fue exitosa
+            mensaje = "Operación exitosa",
+            data = roles
+        )
     }
+
 
     override suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>> {
         val response: HttpResponse = client.get(APIConf.USUARIOS_ENDPOINT) {
@@ -51,16 +62,23 @@ class Usuarios(private val client:HttpClient):Usuarios {
         return Json.decodeFromString<APIRespuesta<Usuario>>(responseBody)
     }
 
-    override suspend fun crearUsuario(usuario: Usuario): APIRespuesta<Usuario> {
+    override suspend fun crearUsuario(usuario: Usuario): APIRespuesta<UsuarioRespuesta> {
         return try {
-
-
-            val response: HttpResponse = client.post(APIConf.PERFIL_ENDPOINT){
-                contentType(ContentType.Application.Json)
-                setBody(Json.encodeToString(usuario))
+            val formData = formData {
+                append("nombre", usuario.nombre)
+                append("correo", usuario.correo)
+                append("contraseña", usuario.contraseña)
+                append("rol", usuario.rol)
             }
-            val apiRespuesta = response.body<APIRespuesta<Usuario>>()
+
+            val response: HttpResponse = client.submitFormWithBinaryData(
+                url = APIConf.USUARIOS_ENDPOINT,
+                formData = formData,
+            )
+
+            val apiRespuesta = response.body<APIRespuesta<UsuarioRespuesta>>()
             apiRespuesta
+
         }catch (e: Exception){
             // Manejo de errores
             APIRespuesta(

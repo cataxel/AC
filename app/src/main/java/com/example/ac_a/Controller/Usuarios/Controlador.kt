@@ -3,6 +3,7 @@ package org.ac.Controller.Usuarios
 import com.example.ac_a.APIRespuesta
 import org.ac.Model.Usuarios.Profile
 import org.ac.Model.Usuarios.Usuario
+import org.ac.Model.Usuarios.UsuarioRespuesta
 import org.ac.service.Usuarios.Usuarios
 import java.io.File
 
@@ -27,7 +28,7 @@ class UsuariosController(private val usuariosService: Usuarios) {
     }
 
     // Metodo para crear un usuario, llamando al servicio correspondiente
-    suspend fun crearUsuario(usuario: Usuario): APIRespuesta<Usuario> {
+    suspend fun crearUsuario(usuario: Usuario): APIRespuesta<UsuarioRespuesta> {
         return try {
             usuariosService.crearUsuario(usuario)
         } catch (e: Exception) {

@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,13 +17,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,8 +47,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -54,7 +58,6 @@ import org.ac.sessionManager.UserSessionManager
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.ac_a.Controller.loginLogout.Controlador
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
 import org.ac.Model.Usuarios.Rol
@@ -203,18 +206,20 @@ fun PhotoCarousel(photoUrls: List<String>){
 @Composable
 fun register(navController: NavController, usuarioServicio:Usuarios) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var roles = remember { mutableStateListOf<Rol>() }
+    val roles = remember { mutableStateListOf<Rol>() }
+    var isLoading by remember { mutableStateOf(false) }
+    var isLoading2 by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         try {
-            val getRoles = usuarioServicio.obtenerRol()
-            getRoles.data?.map { roles }
-            errorMessage = null
+            val response = usuarioServicio.obtenerRol()
+            roles.clear()
+            roles.addAll(response.data ?: emptyList())
+            isLoading = true
         } catch (e: Exception) {
-            // Handle exception
+            errorMessage = "Error al obtener roles: ${e.message}"
         }
     }
-    Text("$roles")
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
@@ -229,27 +234,23 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
             IconButton(onClick = { navController.navigate("login") }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
             }
-            Text(text = "Registrar Usuario", style = MaterialTheme.typography.bodyLarge)
+
+
             Spacer(modifier = Modifier.height(16.dp))
-            var username by remember { mutableStateOf("") }
-            var correo by remember { mutableStateOf("") }
-            var password by remember { mutableStateOf("") }
+            var nombre by remember { mutableStateOf("Beto") }
+            var correo by remember { mutableStateOf("Beto@gmail.com") }
+            var contraseña by remember { mutableStateOf("admin123") }
 
             var rolValue by remember { mutableStateOf(false) }
             var rolMensaje by remember { mutableStateOf("") }
-            var rol by remember { mutableStateOf("") }
 
-            val corrutinaScope = rememberCoroutineScope()
 
-            suspend fun submitForm(){
-                var usuario = Usuario(id="", username, correo, password, id_Rol="")
-            }
 
 
             OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Usuario") }
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre") }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
@@ -259,8 +260,8 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = contraseña,
+                onValueChange = { contraseña = it },
                 label = { Text("Contraseña") },
                 visualTransformation = PasswordVisualTransformation()
             )
@@ -276,20 +277,93 @@ fun register(navController: NavController, usuarioServicio:Usuarios) {
             }
             ){
                 if (rolValue){
-                    Text("v")
+                    Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
                 } else{
-                    Text("^")
+                    Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = null)
                 }
             }
-            if(rolValue){
-                //
-            }
+            if (isLoading) {
+                var expanded by remember { mutableStateOf(false) }  // Para controlar el estado del menú desplegable
+                var selectedOption by remember { mutableStateOf(roles[2]) }  // La opción seleccionada
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                //
-            }) {
-                Text("Registrar")
+                val corrutinaScope = rememberCoroutineScope()
+
+                suspend fun submitForm():Boolean{
+                    val usuario = Usuario(guid="", nombre, correo, contraseña, rol=selectedOption.guid)
+                    val apiRespuesta = usuarioServicio.crearUsuario(usuario)
+                    return apiRespuesta.estado
+                }
+
+                if(rolValue){
+
+                    Column {
+                        OutlinedTextField(
+                            modifier = Modifier.clickable { expanded = !expanded },
+                            value = selectedOption.nombre,
+                            onValueChange = {},
+                            label = { Text("Rol") },
+                            enabled = false,
+                            colors = TextFieldDefaults.colors(
+                                disabledTextColor = Color.Black,
+                                disabledLabelColor = Color.Black,
+                                disabledIndicatorColor = Color.Black,
+                                disabledContainerColor = Color.White,
+                            )
+                        )
+                        // Menú desplegable
+                        DropdownMenu( expanded = expanded,  onDismissRequest = { expanded = false }
+                        ) {
+                            roles.forEach { roles ->
+                                DropdownMenuItem(
+                                    text = { Text("${roles.nombre}") },
+                                    onClick = {
+                                        selectedOption = roles  // Actualiza la opción seleccionada
+                                        expanded = false  // Cierra el menú desplegable
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                }
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+                val context = LocalContext.current
+                val sessionManager = UserSessionManager(context, NetworkClient.httpClient, usuarioServicio)
+                Button(onClick = {
+                    isLoading2 = true
+                    corrutinaScope.launch {
+                        if(submitForm()){
+                            try {
+                                Controlador(sessionManager).Login(correo,contraseña)
+                                val intent = Intent(context, MainActivity::class.java)
+                                context.startActivity(intent)
+                                (context as? ComponentActivity)?.finish()
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+
+                        } else{
+                            var mensaje = "Error al crear usuario\n"
+                            isLoading2 = false
+                            if(nombre=="")
+                                mensaje += "Se requiere Nombre\n"
+                            if(correo=="")
+                                mensaje += "Se requiere Correo\n"
+                            if(contraseña=="")
+                                mensaje += "Se requiere Contraseña\n"
+
+                            Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                }) {
+                    Text("Registrar")
+                }
+                if (isLoading2){
+                    CircularProgressIndicator()
+                }
             }
         }
     }

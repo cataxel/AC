@@ -5,7 +5,7 @@ import kotlinx.serialization.Transient
 
 @Serializable
 data class Rol(
-    val id: String,
+    val guid: String,
     val nombre: String,
     val descripcion: String
 )
@@ -23,11 +23,19 @@ data class Profile(
 
 @Serializable
 data class Usuario(
-    val id: String,
+    val guid: String,
     val nombre: String,
     val correo: String,
     val contraseña: String,
-    val id_Rol: String
+    val rol: String
+)
+
+@Serializable
+data class UsuarioRespuesta(
+    val guid: String,
+    val nombre: String,
+    val correo: String,
+    val rol: String
 )
 
 @Serializable

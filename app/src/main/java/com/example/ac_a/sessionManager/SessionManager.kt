@@ -7,8 +7,6 @@ import android.util.Log
 import com.example.ac_a.APIRespuesta
 import com.example.ac_a.LoginActivity
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -60,7 +58,7 @@ class UserSessionManager(
                 val usuarioResponse = usuarioServicio.obtenerUsuarioId(userGuid)
 
                 if (usuarioResponse.estado && usuarioResponse.data != null) {
-                    saveUserRole(usuarioResponse.data.id_Rol)
+                    saveUserRole(usuarioResponse.data.rol)
                 }else{
                     Log.e("Role","Error: ${usuarioResponse.mensaje}")
                     throw Exception("Error al obtener la informacion de usuario")
