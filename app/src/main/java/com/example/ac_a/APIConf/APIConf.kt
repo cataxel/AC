@@ -16,6 +16,7 @@ object APIConf {
     const val USUARIOS_ENDPOINT = "$BASE_URL/usuarios/"
     const val PERFIL_ENDPOINT = "$BASE_URL/perfiles/"
     const val LOGIN_ENDPOINT = "$BASE_URL/login/"
+    const val ACTIVIDADES_ENDPOINT="$BASE_URL/actividades/"
     const val INTEGRACION_ENDPOINT = "${BASE_URL}/integracion/cloudinary-images/"
 }
 

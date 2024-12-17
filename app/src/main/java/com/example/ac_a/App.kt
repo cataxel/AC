@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.ac_a.Controller.Actividades.ActividadesController
+import com.example.ac_a.Views.Actividades.Actividad
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
 import org.ac.Controller.Usuarios.UsuariosController
@@ -23,6 +25,7 @@ import com.example.ac_a.Views.BottomNavigationBar
 import com.example.ac_a.Views.DrawerContent
 import com.example.ac_a.Views.Home.Home
 import com.example.ac_a.Views.Usuarios.Profile
+import com.example.ac_a.service.Actividades.ActividadServicio
 import org.ac.Controller.Usuarios.ProfileController
 import org.ac.service.Usuarios.Usuarios
 import org.ac.sessionManager.interfaces.SessionManager
@@ -30,8 +33,10 @@ import org.ac.sessionManager.interfaces.SessionManager
 @Composable
 fun App(sessionManager: SessionManager) {
     val usuariosService = remember { Usuarios(NetworkClient.httpClient) }
+    val actividadService=remember { ActividadServicio(NetworkClient.httpClient) }
     val controller = remember { UsuariosController(usuariosService) }
     val controllerPerfil = remember { ProfileController(usuariosService) }
+    val controllerActividad= remember { ActividadesController(actividadService) }
 
     var navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -72,6 +77,10 @@ fun App(sessionManager: SessionManager) {
                 ) {
                     NavHost(navController = navController, startDestination = Navegation.Home.name) {
                         composable(Navegation.Home.name) { Home() }
+                        composable(Navegation.Actividades.name) { Actividad(
+                            controllerActividad,
+                            usuarioId = sessionManager.getUserId()
+                        ) }
                         composable(Navegation.Profile.name) { Profile(
                             controllerPerfil,
                             usuarioId = sessionManager.getUserId()
