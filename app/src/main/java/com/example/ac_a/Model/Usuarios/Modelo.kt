@@ -12,13 +12,23 @@ data class Rol(
 
 @Serializable
 data class Profile(
-    val id: String,
-    val id_user: String,
+    var id: String,
+    val usuario: String,
     val telefono: String,
     val direccion: String,
     val carrera: String,
     val numero_control: Int,
-    val imagen_url: String
+    var imagen: String
+)
+
+@Serializable
+data class ProfileRespuesta(
+    val usuario: String,
+    val telefono: String,
+    val direccion: String,
+    val carrera: String,
+    val numero_control: Int,
+    var imagen: String
 )
 
 @Serializable

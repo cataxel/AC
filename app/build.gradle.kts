@@ -74,6 +74,10 @@ dependencies {
     implementation(libs.coil.network.ktor2)
     implementation(libs.coil.network.ktor3)
 
+    //cloudinary
+    implementation(libs.cloudinary.android)
+    implementation(libs.cloudinary.android.download)
+    implementation(libs.cloudinary.android.preprocess)
     //implementation (libs.ktor.client.logging)
     //implementation (libs.logback.classic)
 }

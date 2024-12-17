@@ -2,7 +2,6 @@ package org.ac.service.Usuarios
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import io.ktor.http.HttpHeaders
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
@@ -13,16 +12,18 @@ import com.example.ac_a.APIRespuesta
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
-import io.ktor.http.Headers
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.HttpStatusCode
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import org.ac.Model.Usuarios.Profile
+import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Model.Usuarios.UsuarioRespuesta
 import org.ac.service.Usuarios.interfaces.Usuarios
-import java.io.File
 
 class Usuarios(private val client:HttpClient):Usuarios {
     override suspend fun obtenerRol(): APIRespuesta<List<Rol>> {
@@ -54,12 +55,12 @@ class Usuarios(private val client:HttpClient):Usuarios {
         return Json.decodeFromString<APIRespuesta<List<Usuario>>>(responseBody)
     }
 
-    override suspend fun obtenerUsuarioId(usuarioId: String): APIRespuesta<Usuario> {
+    override suspend fun obtenerUsuarioId(usuarioId: String): APIRespuesta<UsuarioRespuesta> {
         val response: HttpResponse = client.get("${APIConf.USUARIOS_ENDPOINT}$usuarioId") {
             contentType(ContentType.Application.Json)
         }
         val responseBody = response.bodyAsText()
-        return Json.decodeFromString<APIRespuesta<Usuario>>(responseBody)
+        return Json.decodeFromString<APIRespuesta<UsuarioRespuesta>>(responseBody)
     }
 
     override suspend fun crearUsuario(usuario: Usuario): APIRespuesta<UsuarioRespuesta> {
@@ -89,32 +90,13 @@ class Usuarios(private val client:HttpClient):Usuarios {
         }
     }
 
-    override suspend fun crearPerfil(perfil: Profile, imagen: File?): APIRespuesta<Profile> {
+    override suspend fun crearPerfil(perfil: Profile): APIRespuesta<Profile> {
         return try {
-            val formData = formData {
-                append("carrera", perfil.carrera)
-                append("id_user", perfil.id_user)
-                append("telefono", perfil.telefono)
-                append("direccion", perfil.direccion)
-                append("numero_control", perfil.numero_control.toString())
 
-                imagen?.let {
-                    append("file", it.readBytes(), Headers.build {
-                        append(HttpHeaders.ContentType, ContentType.Image.JPEG.toString())
-                        append(HttpHeaders.ContentDisposition, "filename=\"${it.name}\"")
-                    })
-                }
+            val response: HttpResponse = client.post(APIConf.PERFIL_ENDPOINT){
+                contentType(ContentType.Application.Json)
+                setBody(Json.encodeToString(perfil))
             }
-            // Previsualiza los datos antes de enviarlos
-            /*
-            formData.forEach { part ->
-                println("Form part: ${part.key} = ${part.value}")
-            }*/
-
-            val response: HttpResponse = client.submitFormWithBinaryData(
-                url = APIConf.PERFIL_ENDPOINT,
-                formData = formData
-            )
             // Procesar la respuesta desde el servidor
             val apiRespuesta = response.body<APIRespuesta<Profile>>()
             apiRespuesta
@@ -128,7 +110,7 @@ class Usuarios(private val client:HttpClient):Usuarios {
         }
     }
 
-    override suspend fun obtenerPerfil(usuarioId:String): APIRespuesta<Profile> {
+    override suspend fun obtenerPerfil(usuarioId:String): APIRespuesta<ProfileRespuesta> {
         return try {
             val response: HttpResponse = client.get("${APIConf.PERFIL_ENDPOINT}$usuarioId") {
                 contentType(ContentType.Application.Json)
@@ -143,7 +125,7 @@ class Usuarios(private val client:HttpClient):Usuarios {
             }
 
             val responseBody = response.bodyAsText()
-            Json.decodeFromString<APIRespuesta<Profile>>(responseBody)
+            Json.decodeFromString<APIRespuesta<ProfileRespuesta>>(responseBody)
         } catch (e: Exception) {
             // Manejo de excepciones
             println("Error al obtener el perfil: ${e.localizedMessage}")

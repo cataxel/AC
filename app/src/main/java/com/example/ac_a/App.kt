@@ -7,6 +7,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
@@ -25,6 +26,7 @@ import com.example.ac_a.Views.BottomNavigationBar
 import com.example.ac_a.Views.DrawerContent
 import com.example.ac_a.Views.Home.Home
 import com.example.ac_a.Views.Usuarios.Profile
+import com.example.ac_a.service.Cloudinary.CloudinaryImages
 import com.example.ac_a.service.Actividades.ActividadServicio
 import org.ac.Controller.Usuarios.ProfileController
 import org.ac.service.Usuarios.Usuarios
@@ -34,13 +36,15 @@ import org.ac.sessionManager.interfaces.SessionManager
 fun App(sessionManager: SessionManager) {
     val usuariosService = remember { Usuarios(NetworkClient.httpClient) }
     val actividadService=remember { ActividadServicio(NetworkClient.httpClient) }
+    val cloudinaryService = remember { CloudinaryImages() }
     val controller = remember { UsuariosController(usuariosService) }
-    val controllerPerfil = remember { ProfileController(usuariosService) }
+    val controllerPerfil = remember { ProfileController(usuariosService,cloudinaryService) }
     val controllerActividad= remember { ActividadesController(actividadService) }
+    val usuariosController = remember { UsuariosController(usuariosService) }
+    val profileController = remember { ProfileController(usuariosService, cloudinaryService) }
 
-    var navController = rememberNavController()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val drawerState = rememberDrawerState(initialValue =  DrawerValue.Closed)
+    val navController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
     MaterialTheme {
@@ -49,9 +53,7 @@ fun App(sessionManager: SessionManager) {
             drawerContent = {
                 DrawerContent(
                     onNavigate = { route ->
-                        coroutineScope.launch {
-                            drawerState.close()
-                        }
+                        coroutineScope.launch { drawerState.close() }
                         navController.navigate(route)
                     },
                     onLogout = {
@@ -70,19 +72,22 @@ fun App(sessionManager: SessionManager) {
                 bottomBar = { BottomNavigationBar(navController) }
             ){ innerPadding ->
                 Column(
-                    modifier = Modifier
-                        .padding(innerPadding),
+                    modifier = Modifier.padding(innerPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     NavHost(navController = navController, startDestination = Navegation.Home.name) {
-                        composable(Navegation.Home.name) { Home() }
+                        composable(Navegation.Home.name) {
+                            Home()
+                        }
+                        composable(Navegation.Profile.name) {
+                            Profile(
+                                controller = profileController,
+                                usuarioId = sessionManager.getUserId()
+                            )
+                        }
                         composable(Navegation.Actividades.name) { Actividad(
                             controllerActividad,
-                            usuarioId = sessionManager.getUserId()
-                        ) }
-                        composable(Navegation.Profile.name) { Profile(
-                            controllerPerfil,
                             usuarioId = sessionManager.getUserId()
                         ) }
                     }

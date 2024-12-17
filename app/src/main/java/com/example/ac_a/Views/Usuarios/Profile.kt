@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -36,11 +37,13 @@ import kotlinx.coroutines.launch
 import org.ac.Model.Usuarios.Profile
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Controller.Usuarios.ProfileController
+import org.ac.Model.Usuarios.ProfileRespuesta
+import org.ac.Model.Usuarios.UsuarioRespuesta
 import java.io.File
 
 @Composable
 fun Profile(controller: ProfileController, usuarioId: String) {
-    var perfilData by remember { mutableStateOf<Pair<Usuario, Profile>?>(null) }
+    var perfilData by remember { mutableStateOf<Pair<UsuarioRespuesta, ProfileRespuesta>?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showForm by remember { mutableStateOf(false) }
@@ -80,7 +83,7 @@ fun Profile(controller: ProfileController, usuarioId: String) {
                     Modifier.size(200.dp)
                 ) {
                     AsyncImage(
-                        model = perfil.imagen_url,
+                        model = perfil.imagen,
                         contentDescription = "Imagen de perfil",
                         modifier = Modifier.fillMaxSize().clip(CircleShape),
                         contentScale = ContentScale.Crop
@@ -120,7 +123,12 @@ fun PerfilForm(usuarioId: String, controller: ProfileController) {
     suspend fun submitForm() {
         if (telefono.isNotEmpty() && direccion.isNotEmpty() && carrera.isNotEmpty() && numeroControl.isNotEmpty()) {
             isLoading = true
-            val perfil = Profile(telefono, direccion, carrera, numeroControl, "",0,"")
+            val numeroControlInt = numeroControl.toIntOrNull() ?: 0
+            if (numeroControlInt == 0) {
+                errorMessage = "El número de control debe ser un número válido."
+                return
+            }
+            val perfil = Profile(telefono = telefono, direccion =  direccion, carrera =  carrera, numero_control = numeroControlInt, id = "", usuario = usuarioId, imagen = "")
             val imagenFile = imagenUri?.let { uri ->
                 getFileFromUri(context, uri.toAndroidUri())
             }

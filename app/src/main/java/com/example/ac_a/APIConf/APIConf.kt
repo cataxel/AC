@@ -1,5 +1,6 @@
 package org.ac.APIConf
 
+import com.cloudinary.Cloudinary
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpResponseValidator
@@ -48,4 +49,18 @@ object NetworkClient {
             }
         }
     }
+}
+
+object CloudinaryConf {
+    private const val CLOUD_NAME = "do5pjsoef"
+    private const val API_KEY = "378119892223313"
+    private const val API_SECRET = "Y7rCrUtqWnLu08y04_Kno6N-KJA"
+
+    val cloudinary: Cloudinary = Cloudinary(
+        mapOf(
+            "cloud_name" to CLOUD_NAME,
+            "api_key" to API_KEY,
+            "api_secret" to API_SECRET
+        )
+    )
 }

@@ -1,7 +1,9 @@
 package org.ac.Controller.Usuarios
 
 import com.example.ac_a.APIRespuesta
+import com.example.ac_a.service.Cloudinary.CloudinaryImages
 import org.ac.Model.Usuarios.Profile
+import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Model.Usuarios.UsuarioRespuesta
 import org.ac.service.Usuarios.Usuarios
@@ -23,7 +25,7 @@ class UsuariosController(private val usuariosService: Usuarios) {
         }
     }
 
-    suspend fun obtenerUsuarioPorId(usuarioId:String): APIRespuesta<Usuario> {
+    suspend fun obtenerUsuarioPorId(usuarioId:String): APIRespuesta<UsuarioRespuesta> {
         return usuariosService.obtenerUsuarioId(usuarioId)
     }
 
@@ -41,7 +43,10 @@ class UsuariosController(private val usuariosService: Usuarios) {
     }
 }
 
-class ProfileController(private val usuariosService: Usuarios) {
+class ProfileController(
+    private val usuariosService: Usuarios,
+    private val cloudinaryService: CloudinaryImages
+) {
 
     suspend fun crearPerfil(
         perfil: Profile,
@@ -50,8 +55,13 @@ class ProfileController(private val usuariosService: Usuarios) {
         onError: (String) -> Unit
     ) {
         try {
+            if (imagen != null) {
+                val imagenUrl = cloudinaryService.uploadImageProfile(imagen.absolutePath)
+                perfil.imagen = imagenUrl
+                perfil.id = ""
+            }
             // Aquí puedes llamar al servicio para crear el perfil, asegurándote de pasar la imagen si existe
-            val respuesta = usuariosService.crearPerfil(perfil, imagen)
+            val respuesta = usuariosService.crearPerfil(perfil)
 
             if (respuesta.estado) {
                 // Si la respuesta es exitosa, llama a la función de éxito
@@ -66,7 +76,7 @@ class ProfileController(private val usuariosService: Usuarios) {
         }
     }
 
-    suspend fun ObtenerPerfil(usuarioId: String): Pair<Usuario, Profile>? {
+    suspend fun ObtenerPerfil(usuarioId: String): Pair<UsuarioRespuesta, ProfileRespuesta>? {
         val perfilRespuesta = usuariosService.obtenerPerfil(usuarioId)
 
         // Verificar si el perfil fue encontrado

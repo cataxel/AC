@@ -10,7 +10,10 @@ import kotlinx.serialization.json.Json
 import org.ac.APIConf.APIConf
 import org.ac.APIConf.NetworkClient
 import com.example.ac_a.Model.Images.CloudinaryResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
+import org.ac.APIConf.CloudinaryConf
 import org.ac.service.Cloudinary.interfaces.CloudinaryInterface
 import java.io.File
 
@@ -34,6 +37,17 @@ class CloudinaryImages : CloudinaryInterface {
                 mensaje = "Error al obtener imágenes: ${e.message}",
                 data = emptyList()
             )
+        }
+    }
+
+    override suspend fun uploadImageProfile(filePath: String): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result = CloudinaryConf.cloudinary.uploader().upload(filePath, mapOf("folder" to "Profile"))
+                result["url"] as String
+            } catch (e: Exception) {
+                throw Exception("Error al subir la imagen: ${e.message}")
+            }
         }
     }
 

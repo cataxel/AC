@@ -5,4 +5,5 @@ import java.io.File
 
 interface CloudinaryInterface {
     suspend fun getAlbumPhotos() : CloudinaryResponse
+    suspend fun uploadImageProfile(filePath: String) : String
 }

@@ -8,10 +8,11 @@ import androidx.compose.runtime.remember
 import com.example.ac_a.APIRespuesta
 import org.ac.Controller.Usuarios.UsuariosController
 import org.ac.Model.Usuarios.Usuario
+import org.ac.Model.Usuarios.UsuarioRespuesta
 
 @Composable
 fun UsuariosScreen(controller: UsuariosController,usuarioId:String) {
-    val usuarioState = remember { mutableStateOf<APIRespuesta<Usuario>?>(null) }
+    val usuarioState = remember { mutableStateOf<APIRespuesta<UsuarioRespuesta>?>(null) }
 
     LaunchedEffect(usuarioId) {
         // Llama al controlador para obtener el usuario específico por su ID
