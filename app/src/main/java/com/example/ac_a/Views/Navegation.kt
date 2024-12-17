@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
@@ -77,6 +78,9 @@ fun BottomNavigationBar(navController: NavController){
             IconButton(
                 onClick = {navController.navigate(Navegation.Profile.name)}
             ) { Icon(Icons.Default.Person, contentDescription = "Perfil") }
+            IconButton(
+                onClick = {navController.navigate(Navegation.Actividades.name)}
+            ) { Icon(Icons.Default.Place, contentDescription = "Actividades") }
         }
     )
 }
