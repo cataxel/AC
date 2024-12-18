@@ -6,11 +6,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -43,6 +46,7 @@ import coil3.Uri
 import coil3.compose.AsyncImage
 import coil3.toCoilUri
 import com.example.ac_a.R
+import com.example.ac_a.ui.theme.LightBlue80
 import com.example.ac_a.utils.getFileFromUri
 import com.example.ac_a.utils.toAndroidUri
 import kotlinx.coroutines.launch
@@ -79,9 +83,10 @@ fun Profile(controller: ProfileController, usuarioId: String) {
 
     // Si estamos cargando, mostramos un indicador de progreso
     if (isLoading) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(modifier = Modifier.padding(16.dp))
     } else if (errorMessage != null) {
         // Si hubo un error, mostramos el mensaje de error
+        Text(text = errorMessage ?: "Error desconocido", color = Color.Red, modifier = Modifier.padding(16.dp))
         SimpleAlertDialog(mensaje = errorMessage ?: "Error desconocido") {
             // Cuando se cierra el diálogo, puedes hacer algo si lo deseas
             // Por ejemplo, limpiar el mensaje de error:

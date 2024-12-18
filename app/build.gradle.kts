@@ -79,6 +79,8 @@ dependencies {
     implementation(libs.cloudinary.android)
     implementation(libs.cloudinary.android.download)
     implementation(libs.cloudinary.android.preprocess)
+    
+
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha10")
 
 

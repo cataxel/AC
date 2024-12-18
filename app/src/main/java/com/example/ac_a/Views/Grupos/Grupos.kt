@@ -2,6 +2,7 @@ package com.example.ac_a.Views.Grupos
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -18,6 +19,8 @@ import com.example.ac_a.Controller.Grupos.GruposController
 import com.example.ac_a.Model.Grupos.Grupo
 import com.example.ac_a.Model.Inscripciones.Inscripcion
 import com.example.ac_a.service.Grupos.InscripcionServicio
+import com.example.ac_a.ui.theme.LightBlue40
+import com.example.ac_a.ui.theme.LightBlue80
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
 import org.ac.Model.Usuarios.Usuario
@@ -45,7 +48,7 @@ fun Grupos(controller: GruposController, actividadNombre: String) {
     if (isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             CircularProgressIndicator()
         }
@@ -53,6 +56,7 @@ fun Grupos(controller: GruposController, actividadNombre: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(LightBlue80)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {

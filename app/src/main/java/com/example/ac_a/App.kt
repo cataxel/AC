@@ -78,7 +78,7 @@ fun App(sessionManager: SessionManager) {
                 ) {
                     NavHost(navController = navController, startDestination = Navegation.Home.name) {
                         composable(Navegation.Home.name) {
-                            Home()
+                            Home(navController=navController)
                         }
                         composable(Navegation.Profile.name) {
                             Profile(

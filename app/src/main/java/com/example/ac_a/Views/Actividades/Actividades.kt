@@ -24,6 +24,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.ac_a.ui.theme.Blue40
+import com.example.ac_a.ui.theme.LightBlue40
+import com.example.ac_a.ui.theme.LightBlue80
 
 @Composable
 fun Actividad(controller: ActividadesController, usuarioId: String,navController: NavController) {
@@ -48,13 +51,7 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF2196F3),
-                            Color(0xFF64B5F6),
-                            Color(0xFFBBDEFB)
-                        )
-                    )
+                    LightBlue80
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -65,13 +62,7 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF2196F3),
-                            Color(0xFF64B5F6),
-                            Color(0xFFBBDEFB)
-                        )
-                    )
+                    LightBlue80
                 )
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
@@ -82,7 +73,7 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color.Black
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -90,7 +81,7 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                 text = "Número de actividades: ${actividades.size}",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 20.sp,
-                    color = Color.White
+                    color = Color.Black
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )

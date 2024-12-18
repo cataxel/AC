@@ -1,51 +1,39 @@
 package com.example.ac_a.Views
 
-
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ac_a.Navegation
-import com.example.ac_a.ui.theme.Purple80
+import com.example.ac_a.ui.theme.Blue40
+import com.example.ac_a.ui.theme.Blue80
+import com.example.ac_a.ui.theme.LightBlue80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(currentScreen: String, onMenuClick: () -> Unit) {
     TopAppBar(
         colors = topAppBarColors(
-            containerColor = Purple80
+            containerColor = Blue80
         ),
         title = {
             Text(
-                text = when (currentScreen){
+                text = when (currentScreen) {
                     Navegation.Home.name -> "Inicio"
                     Navegation.Profile.name -> "Perfil"
                     else -> ""
@@ -53,39 +41,62 @@ fun AppBar(currentScreen: String, onMenuClick: () -> Unit) {
             )
         },
         navigationIcon = {
-          IconButton(onClick = {onMenuClick()} ){
-              Icon(Icons.Default.Menu, contentDescription = "Menu")
-          }
+            IconButton(onClick = { onMenuClick() }) {
+                Icon(Icons.Default.Menu, contentDescription = "Menu")
+            }
         },
-        modifier = Modifier
-            .windowInsetsPadding(WindowInsets.systemBars)
-
+        modifier = Modifier.fillMaxWidth() // Asegura que ocupe toda la anchura
     )
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController){
+fun BottomNavigationBar(navController: NavController) {
     BottomAppBar(
         modifier = Modifier
-            .windowInsetsPadding(WindowInsets.systemBars),
+            .fillMaxWidth() // Asegura que ocupe toda la anchura
+            .background(Blue80),
         actions = {
-            IconButton(
-                onClick = {navController.navigate(Navegation.Home.name)}
-            ) { Icon(Icons.Default.Home, contentDescription = "Inicio") }
-            IconButton(
-                onClick = {navController.navigate(Navegation.Profile.name)}
-            ) { Icon(Icons.Default.Person, contentDescription = "Perfil") }
-            IconButton(
-                onClick = {navController.navigate(Navegation.Actividades.name)}
-            ) { Icon(Icons.Default.Place, contentDescription = "Actividades") }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = { navController.navigate(Navegation.Home.name) }
+                ) {
+                    Icon(
+                        Icons.Default.Home,
+                        contentDescription = "Inicio",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                IconButton(
+                    onClick = { navController.navigate(Navegation.Profile.name) }
+                ) {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Perfil",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                IconButton(
+                    onClick = { navController.navigate(Navegation.Actividades.name) }
+                ) {
+                    Icon(
+                        Icons.Default.Place,
+                        contentDescription = "Actividades",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
         }
     )
 }
 
 
 @Composable
-fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit){
-    Box(modifier = Modifier.fillMaxSize().padding(vertical =  34.dp)) {
+fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize().padding(vertical = 34.dp).background(Color.White)) {
         // Contenido de navegación
         Column(
             modifier = Modifier
@@ -94,11 +105,12 @@ fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit){
                 .align(Alignment.TopStart)
         ) {
             Text(
-                text = " << Navegación",
+                text = "<< Navegación",
                 style = MaterialTheme.typography.titleLarge,
+                color = LightBlue80,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            HorizontalDivider()
+            Divider(color = LightBlue80) // Separador de color azul con opacidad
             Spacer(modifier = Modifier.height(16.dp))
             DrawerItem(
                 label = "Perfil",
@@ -112,9 +124,13 @@ fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomCenter),
+            colors = ButtonDefaults.buttonColors(containerColor = LightBlue80)
         ) {
-            Text(text = "Cerrar sesión")
+            Text(
+                text = "Cerrar sesión",
+                color = Color.White
+            )
         }
     }
 }
@@ -123,6 +139,7 @@ fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit){
 fun DrawerItem(label: String, onClick: () -> Unit) {
     Text(
         text = label,
+        color = LightBlue80,
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
