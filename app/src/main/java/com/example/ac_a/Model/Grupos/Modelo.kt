@@ -13,6 +13,15 @@ data class Grupo(
     val fecha_inicial: String,
     val fecha_final: String,
     val capacidad: Int,
-    val usuario_id: Int,
-    val actividad_id: Int
+    val usuario_nombre: String,
+    val actividad_descripcion: String
+)
+
+
+@Serializable
+data class GrupoResponse(
+    val count: Int,
+    val next: String?,
+    val previous: String?,
+    val results: List<Grupo>
 )

@@ -2,11 +2,13 @@ package com.example.ac_a
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -66,10 +68,11 @@ fun App(sessionManager: SessionManager) {
                         onMenuClick = { coroutineScope.launch { drawerState.open() } }
                     )
                 },
+                containerColor = Color.White,
                 bottomBar = { BottomNavigationBar(navController) }
             ) { innerPadding ->
                 Column(
-                    modifier = Modifier.padding(innerPadding),
+                    modifier = Modifier.fillMaxSize().padding(innerPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -90,9 +93,9 @@ fun App(sessionManager: SessionManager) {
                                 navController = navController
                             )
                         }
-                        composable("grupos/{actividadId}") { backStackEntry ->
-                            val actividadId = backStackEntry.arguments?.getString("actividadId")?.toInt() ?: 0
-                            Grupos(controller = controllerGrupo, actividadId = actividadId)
+                        composable("grupos/{actividadNombre}") { backStackEntry ->
+                            val actividadNombre = backStackEntry.arguments?.getString("actividadNombre")?: ""
+                            Grupos(controller = controllerGrupo, actividadNombre = actividadNombre)
                         }
                     }
                 }

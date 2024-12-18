@@ -38,10 +38,7 @@ import com.example.ac_a.ui.theme.Purple80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(
-    currentScreen: String,
-    onMenuClick: () -> Unit
-){
+fun AppBar(currentScreen: String, onMenuClick: () -> Unit) {
     TopAppBar(
         colors = topAppBarColors(
             containerColor = Purple80
@@ -88,7 +85,7 @@ fun BottomNavigationBar(navController: NavController){
 
 @Composable
 fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit){
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(vertical =  34.dp)) {
         // Contenido de navegación
         Column(
             modifier = Modifier
@@ -97,7 +94,7 @@ fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit){
                 .align(Alignment.TopStart)
         ) {
             Text(
-                text = "Navegación",
+                text = " << Navegación",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 16.dp)
             )

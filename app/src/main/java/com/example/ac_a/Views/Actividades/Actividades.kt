@@ -128,7 +128,7 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                         )
                         Button(
                             onClick = {
-                                navController.navigate("grupos/${actividad.id}")
+                                navController.navigate("grupos/${actividad.nombre}")
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
                             shape = MaterialTheme.shapes.medium,
