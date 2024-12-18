@@ -4,5 +4,4 @@ enum class Navegation {
     Home,
     Profile,
     Actividades,
-    Group
 }

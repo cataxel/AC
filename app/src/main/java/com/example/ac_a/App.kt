@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ac_a.Controller.Actividades.ActividadesController
 import com.example.ac_a.Controller.Grupos.GruposController
 import com.example.ac_a.Views.Actividades.Actividad
+import com.example.ac_a.Views.Actividades.crear_actializar_Actividad
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
 import org.ac.Controller.Usuarios.UsuariosController
@@ -97,6 +98,15 @@ fun App(sessionManager: SessionManager) {
                             val actividadNombre = backStackEntry.arguments?.getString("actividadNombre")?: ""
                             Grupos(controller = controllerGrupo, actividadNombre = actividadNombre)
                         }
+                        composable("crear_actializar_Actividad?guidActividad={guidActividad}&nombre={nombre}&descripcion={descripcion}") {
+                            val guidActividad = it.arguments?.getString("guidActividad")
+                            val nombre = it.arguments?.getString("nombre")
+                            val descripcion = it.arguments?.getString("descripcion")
+                            crear_actializar_Actividad(
+                                navController = navController, guidActividad = guidActividad.toString(), nombreA = nombre.toString(), descripcionA = descripcion.toString()
+                            )
+                        }
+
                     }
                 }
             }
