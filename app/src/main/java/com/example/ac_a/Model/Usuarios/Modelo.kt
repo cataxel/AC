@@ -22,6 +22,16 @@ data class Profile(
 )
 
 @Serializable
+data class ProfileModificar(
+    val usuario: String?,
+    val telefono: String?,
+    val direccion: String?,
+    val carrera: String?,
+    val numero_control: Int?,
+    var imagen: String?
+)
+
+@Serializable
 data class ProfileRespuesta(
     val usuario: String,
     val telefono: String,

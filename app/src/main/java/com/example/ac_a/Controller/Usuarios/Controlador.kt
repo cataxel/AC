@@ -3,6 +3,7 @@ package org.ac.Controller.Usuarios
 import com.example.ac_a.APIRespuesta
 import com.example.ac_a.service.Cloudinary.CloudinaryImages
 import org.ac.Model.Usuarios.Profile
+import org.ac.Model.Usuarios.ProfileModificar
 import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Model.Usuarios.UsuarioRespuesta
@@ -75,6 +76,31 @@ class ProfileController(
             onError("Error al comunicarse con el servidor: ${e.message}")
         }
     }
+
+    suspend fun modificarPerfil(
+        perfil: ProfileModificar,
+        imagen: File?, // Recibimos el archivo de la imagen
+        onSuccess: (APIRespuesta<ProfileModificar>) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        try {
+            if (imagen != null) {
+                val imagenUrl = cloudinaryService.uploadImageProfile(imagen.absolutePath)
+                perfil.imagen = imagenUrl // Asignar la URL de la imagen al perfil
+            }
+
+            val respuesta = usuariosService.modificarPerfil(perfil)
+
+            if (respuesta.estado) {
+                onSuccess(respuesta)
+            } else {
+                onError(respuesta.mensaje ?: "Error desconocido al modificar el perfil")
+            }
+        } catch (e: Exception) {
+            onError("Error al comunicarse con el servidor: ${e.message}")
+        }
+    }
+
 
     suspend fun ObtenerPerfil(usuarioId: String): Pair<UsuarioRespuesta, ProfileRespuesta>? {
         val perfilRespuesta = usuariosService.obtenerPerfil(usuarioId)

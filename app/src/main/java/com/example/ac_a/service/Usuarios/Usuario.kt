@@ -1,5 +1,6 @@
 package org.ac.service.Usuarios
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
@@ -12,13 +13,16 @@ import com.example.ac_a.APIRespuesta
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import org.ac.Model.Usuarios.Profile
+import org.ac.Model.Usuarios.ProfileModificar
 import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.Usuario
@@ -101,6 +105,26 @@ class Usuarios(private val client:HttpClient):Usuarios {
             val apiRespuesta = response.body<APIRespuesta<Profile>>()
             apiRespuesta
         } catch (e: Exception) {
+            // Manejo de errores
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al crear el perfil: ${e.message}",
+                data = null
+            )
+        }
+    }
+
+    override suspend fun modificarPerfil(perfil: ProfileModificar): APIRespuesta<ProfileModificar> {
+        return try {
+            val response: HttpResponse = client.put(APIConf.PERFIL_ENDPOINT+"${perfil.usuario}/"){
+                contentType(ContentType.Application.Json)
+                setBody(Json.encodeToString(perfil))
+            }
+            // Procesar la respuesta desde el servidor
+            val apiRespuesta = response.body<APIRespuesta<ProfileModificar>>()
+            apiRespuesta
+        } catch (e: Exception) {
+            Log.e("update perfil", "Error al actualizar el perfil: ${e.message}")
             // Manejo de errores
             APIRespuesta(
                 estado = false,
