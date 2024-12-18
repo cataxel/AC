@@ -84,7 +84,6 @@ class LoginActivity : ComponentActivity() {
                 composable("Register") {
                     Register(navController = navController, usuarioService)
                 }
-                //composable("Registrar") { Register(navController = navController,usuarioService) }
             }
         }
     }

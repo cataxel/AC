@@ -1,32 +1,36 @@
 package com.example.ac_a.Views.Actividades
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ac_a.Controller.Actividades.ActividadesController
 import com.example.ac_a.Model.Actividades.Actividad
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.example.ac_a.ui.theme.Blue40
-import com.example.ac_a.ui.theme.LightBlue40
-import com.example.ac_a.ui.theme.LightBlue80
+import com.example.ac_a.Navegation
+import com.example.ac_a.service.Actividades.ActividadServicio
+import kotlinx.coroutines.launch
+import org.ac.APIConf.NetworkClient
 
 @Composable
 fun Actividad(controller: ActividadesController, usuarioId: String,navController: NavController) {
@@ -51,7 +55,13 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    LightBlue80
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF2196F3),
+                            Color(0xFF64B5F6),
+                            Color(0xFFBBDEFB)
+                        )
+                    )
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -62,7 +72,13 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    LightBlue80
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF2196F3),
+                            Color(0xFF64B5F6),
+                            Color(0xFFBBDEFB)
+                        )
+                    )
                 )
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
@@ -73,15 +89,21 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color.White
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
+            Button(onClick = {
+                navController.navigate("crear_actializar_Actividad?guidActividad=${""}&nombre=${""}&descripcion=${""}")
+
+            }){
+                Text(text = "Crear actividad")
+            }
             Text(
                 text = "Número de actividades: ${actividades.size}",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 20.sp,
-                    color = Color.Black
+                    color = Color.White
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -100,15 +122,27 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Text(
-                            text = actividad.nombre,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E88E5)
-                            ),
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = actividad.nombre,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF1E88E5)
+                                ),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            IconButton(onClick = {
+                                navController.navigate("crear_actializar_Actividad?guidActividad=${actividad.guid}&nombre=${actividad.nombre}&descripcion=${actividad.descripcion}")
+                            }){
+                                Icon(
+                                    imageVector = androidx.compose.material.icons.Icons.Default.Edit,
+                                    contentDescription = "Actualizar",
+                                    tint = Color.Green
+                                )
+                            }
+                        }
+
                         Text(
                             text = actividad.descripcion,
                             style = MaterialTheme.typography.bodyMedium.copy(
@@ -117,18 +151,70 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                             ),
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
-                        Button(
-                            onClick = {
-                                navController.navigate("grupos/${actividad.nombre}")
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text(
-                                text = "Ver grupos",
+                        val context = LocalContext.current
+                        val corrutinaScope = rememberCoroutineScope()
+                        var isLoadingDelete by remember { mutableStateOf(false) }
+                        var showDialog by remember { mutableStateOf(false) }
+
+                        if (showDialog) {
+                            AlertDialog(
+                                onDismissRequest = { showDialog = false },
+                                title = { Text(text = "Eliminar actividad") },
+                                text = {
+                                    Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+                                        Text("Desea eliminar la actividad?")
+
+                                        if (isLoadingDelete) {
+                                            CircularProgressIndicator()
+                                        }
+                                    }
+
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        isLoadingDelete = true
+                                        corrutinaScope.launch {
+                                            if(eliminarActividad(actividad))
+                                                Toast.makeText(context, "Actividad eliminada", Toast.LENGTH_SHORT).show()
+                                            navController.navigate(Navegation.Actividades.name)
+                                            isLoadingDelete = false
+                                            showDialog = false
+                                        }
+                                    }) {
+                                        Text("Aceptar")
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { showDialog = false }) {
+                                        Text("Cancelar")
+                                    }
+                                }
                             )
                         }
+
+                        Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+                            IconButton(onClick = {
+                                showDialog = true
+                            }){
+                                Icon(
+                                    imageVector = androidx.compose.material.icons.Icons.Default.Delete,
+                                    contentDescription = "Eliminar",
+                                    tint = Color.Red
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                    navController.navigate("grupos/${actividad.nombre}")
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
+                                shape = MaterialTheme.shapes.medium,
+                            ) {
+                                Text(
+                                    text = "Ver grupos",
+                                )
+                            }
+                        }
+
                     }
                 }
             }
@@ -140,4 +226,92 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
             }
         }
     }
+}
+
+
+@Composable
+fun crear_actializar_Actividad(navController: NavController, guidActividad: String, nombreA: String, descripcionA: String) {
+
+    var mensaje by remember { mutableStateOf("Crear") }
+    var mensaje2 by remember { mutableStateOf("creada") }
+    var nombre by remember { mutableStateOf(nombreA) }
+    var descripcion by remember { mutableStateOf(descripcionA) }
+    var isLoading by remember { mutableStateOf(false) }
+    if(guidActividad!=""){
+        mensaje = "Actualizar"
+        mensaje2 = "actualizada"
+    }
+
+    val corrutinaScope = rememberCoroutineScope()
+    suspend fun submitForm(): Boolean{
+        val inscripcionServicio = ActividadServicio(NetworkClient.httpClient)
+        val actividad = Actividad(id=0, guid=guidActividad, nombre, descripcion)
+        isLoading = false
+        if(guidActividad==""){ //Crear
+            val apiRespuesta = inscripcionServicio.crearActividad(actividad)
+            return apiRespuesta.estado
+        }
+        else{ //Actualizar
+            val apiRespuesta = inscripcionServicio.actualizarActividad(actividad)
+            return apiRespuesta.estado
+        }
+    }
+
+    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Text("$mensaje Actividad", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = nombre,
+            onValueChange = { nombre = it },
+            label = { Text("Nombre") },
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
+                unfocusedIndicatorColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = descripcion,
+            onValueChange = { descripcion = it },
+            label = { Text("Descripción") },
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
+                unfocusedIndicatorColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            )
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        val context = LocalContext.current
+        Button(onClick = {
+            isLoading = true
+            corrutinaScope.launch {
+                if(submitForm()){
+                    Toast.makeText(context, "Actividad $mensaje2", Toast.LENGTH_SHORT).show()
+                    navController.navigate(Navegation.Actividades.name)
+                } else {
+                    Toast.makeText(context, "Actividad NO $mensaje2", Toast.LENGTH_SHORT).show()
+                }
+                isLoading = false
+            }
+        }){
+            Text(text = mensaje)
+        }
+        if (isLoading) {
+            CircularProgressIndicator()
+        }
+    }
+
+}
+
+suspend fun eliminarActividad(actividad: Actividad):Boolean {
+    val actividadServicio = ActividadServicio(NetworkClient.httpClient)
+    val apiRespuesta = actividadServicio.eliminarActividad(actividad)
+    return apiRespuesta.estado
 }

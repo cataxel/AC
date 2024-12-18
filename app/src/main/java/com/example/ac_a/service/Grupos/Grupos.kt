@@ -34,4 +34,8 @@ class GrupoServicio(private val client: HttpClient) : Grupos {
             )
         }
     }
+
+    override suspend fun crearGrupo(grupo: Grupo): APIRespuesta<Grupo> {
+        TODO("Not yet implemented")
+    }
 }
