@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.Uri
 import coil3.compose.AsyncImage
@@ -122,9 +123,9 @@ fun Profile(controller: ProfileController, usuarioId: String) {
                     .padding(16.dp)
                     .background(Color.Gray)
             ) {
-                Log.d("Perfil Imagen URL", perfil.imagen)
+                Log.d("Perfil Imagen URL", "perfil.imagen")
                 AsyncImage(
-                    model = perfil.imagen,
+                    model = "${perfil.imagen}",
                     contentDescription = "Imagen de perfil",
                     modifier = Modifier.fillMaxSize(),
                     placeholder = painterResource(id = R.drawable.placehorder_profile), // Agrega un placeholder si lo deseas
@@ -138,45 +139,54 @@ fun Profile(controller: ProfileController, usuarioId: String) {
                 style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
                 modifier = Modifier.padding(top = 16.dp)
             )
-
             // Información del perfil
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Text(
-                    text = "Nombre: ${usuario.nombre}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
-                )
-                Text(
-                    text = "Correo: ${usuario.correo}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
-                )
-                Text(
-                    text = "Teléfono: ${perfil.telefono}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
-                )
-                Text(
-                    text = "Dirección: ${perfil.direccion}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
-                )
-                Text(
-                    text = "Carrera: ${perfil.carrera}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
-                )
-                Text(
-                    text = "Número de Control: ${perfil.numero_control}",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
-                )
+            Column() {
+                InfoRow("Nombre", usuario.nombre)
+
+                InfoRow("Correo", usuario.correo)
+
+                InfoRow("Teléfono", perfil.telefono)
+
+                InfoRow("Dirección", perfil.direccion)
+
+                InfoRow("Carrera", perfil.carrera)
+
+                InfoRow("Número de Control", perfil.numero_control.toString())
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
             // Botón para modificar el perfil
+            /*
             Button(
                 onClick = { showForm = true },
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text("Modificar Perfil")
-            }
+            }*/
         }
+    }
+}
+
+
+// Detalle de cada campo
+@Composable
+fun InfoRow(label: String, value: String) {
+    Column(modifier = Modifier.padding(bottom = 8.dp)) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = Color.DarkGray,
+                fontWeight = FontWeight.Medium
+            ),
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = Color.White,
+            ),
+            modifier = Modifier.padding(start = 8.dp)
+        )
     }
 }
 
@@ -231,7 +241,7 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
                 direccion = direccion,
                 carrera = carrera,
                 numero_control = numeroControlInt,
-                id = "",
+                guid = "",
                 usuario = usuarioId,
                 imagen = ""
             )
@@ -244,7 +254,7 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
                 imagenFile,
                 onSuccess = { respuesta ->
                     isLoading = false
-                    successMessage = "Perfil actualizado con éxito."
+                    successMessage = "Perfil creado con éxito."
                 },
                 onError = { error ->
                     isLoading = false
@@ -313,7 +323,9 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
         )
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp),
         ) {
             Text(
                 text = "Teléfono",
@@ -391,14 +403,18 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
                     submitForm() // Ejecuta submitForm dentro del contexto de una corrutina
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
             Text("Guardar Perfil")
         }
 
         Button(
             onClick = onCancel,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp,horizontal = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 16.dp)
         ) {
             Text("Cancelar")
         }
@@ -410,7 +426,11 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
 
         // Mostrar mensaje de éxito
         successMessage?.let {
-            Text(text = it, color = Color.Green)
+            SimpleAlertDialog(mensaje = it) {
+                // Llamar a esta función cuando el usuario presiona "Aceptar" en el diálogo de éxito
+                successMessage = null
+                onCancel()
+            }
         }
 
         // Si hay un mensaje de error, mostramos el diálogo

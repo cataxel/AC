@@ -14,7 +14,7 @@ interface Usuarios {
     suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>>
     suspend fun obtenerUsuarioId(usuarioId:String): APIRespuesta<UsuarioRespuesta>
     suspend fun crearUsuario(usuario: Usuario): APIRespuesta<UsuarioRespuesta>
-    suspend fun crearPerfil(perfil: Profile): APIRespuesta<Profile>
+    suspend fun crearPerfil(perfil: Profile): APIRespuesta<ProfileRespuesta>
     suspend fun modificarPerfil(perfil: ProfileModificar):APIRespuesta<ProfileModificar>
     suspend fun obtenerPerfil(usuarioId: String):APIRespuesta<ProfileRespuesta>
 }

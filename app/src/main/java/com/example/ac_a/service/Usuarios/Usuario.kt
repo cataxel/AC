@@ -94,7 +94,7 @@ class Usuarios(private val client:HttpClient):Usuarios {
         }
     }
 
-    override suspend fun crearPerfil(perfil: Profile): APIRespuesta<Profile> {
+    override suspend fun crearPerfil(perfil: Profile): APIRespuesta<ProfileRespuesta> {
         return try {
 
             val response: HttpResponse = client.post(APIConf.PERFIL_ENDPOINT){
@@ -102,7 +102,7 @@ class Usuarios(private val client:HttpClient):Usuarios {
                 setBody(Json.encodeToString(perfil))
             }
             // Procesar la respuesta desde el servidor
-            val apiRespuesta = response.body<APIRespuesta<Profile>>()
+            val apiRespuesta = response.body<APIRespuesta<ProfileRespuesta>>()
             apiRespuesta
         } catch (e: Exception) {
             // Manejo de errores
@@ -116,7 +116,7 @@ class Usuarios(private val client:HttpClient):Usuarios {
 
     override suspend fun modificarPerfil(perfil: ProfileModificar): APIRespuesta<ProfileModificar> {
         return try {
-            val response: HttpResponse = client.put(APIConf.PERFIL_ENDPOINT+"${perfil.usuario}/"){
+            val response: HttpResponse = client.put(APIConf.PERFIL_ENDPOINT+"${perfil.usuario}"){
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(perfil))
             }

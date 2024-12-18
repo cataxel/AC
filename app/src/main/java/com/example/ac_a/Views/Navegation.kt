@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -83,7 +84,7 @@ fun BottomNavigationBar(navController: NavController) {
                     onClick = { navController.navigate(Navegation.Actividades.name) }
                 ) {
                     Icon(
-                        Icons.Default.Place,
+                        Icons.Filled.DateRange,
                         contentDescription = "Actividades",
                         modifier = Modifier.size(32.dp)
                     )
@@ -113,8 +114,16 @@ fun DrawerContent(onNavigate: (String) -> Unit, onLogout: () -> Unit) {
             Divider(color = LightBlue80) // Separador de color azul con opacidad
             Spacer(modifier = Modifier.height(16.dp))
             DrawerItem(
+                label = "Inicio",
+                onClick = { onNavigate(Navegation.Home.name) }
+            )
+            DrawerItem(
                 label = "Perfil",
                 onClick = { onNavigate(Navegation.Profile.name) }
+            )
+            DrawerItem(
+                label = "Actividades",
+                onClick = { onNavigate(Navegation.Actividades.name) }
             )
         }
 

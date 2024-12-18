@@ -44,7 +44,7 @@ class CloudinaryImages : CloudinaryInterface {
         return withContext(Dispatchers.IO) {
             try {
                 val result = CloudinaryConf.cloudinary.uploader().upload(filePath, mapOf("folder" to "Profile"))
-                result["url"] as String
+                result["secure_url"] as String
             } catch (e: Exception) {
                 throw Exception("Error al subir la imagen: ${e.message}")
             }

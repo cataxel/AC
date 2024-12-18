@@ -52,14 +52,14 @@ class ProfileController(
     suspend fun crearPerfil(
         perfil: Profile,
         imagen: File?,
-        onSuccess: (APIRespuesta<Profile>) -> Unit,
+        onSuccess: (APIRespuesta<ProfileRespuesta>) -> Unit,
         onError: (String) -> Unit
     ) {
         try {
             if (imagen != null) {
                 val imagenUrl = cloudinaryService.uploadImageProfile(imagen.absolutePath)
                 perfil.imagen = imagenUrl
-                perfil.id = ""
+                perfil.guid = ""
             }
             // Aquí puedes llamar al servicio para crear el perfil, asegurándote de pasar la imagen si existe
             val respuesta = usuariosService.crearPerfil(perfil)

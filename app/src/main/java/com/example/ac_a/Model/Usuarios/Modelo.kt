@@ -12,7 +12,7 @@ data class Rol(
 
 @Serializable
 data class Profile(
-    var id: String,
+    var guid: String,
     val usuario: String,
     val telefono: String,
     val direccion: String,
