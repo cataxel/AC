@@ -199,20 +199,33 @@ class GruposServicioRetrofit(private val apiServiceGrupos: GrupoRetrofit) : Grup
 
     override suspend fun eliminarGrupo(@Path(value = "guid") guid: String): APIRespuesta<Grupo> {
         return try {
-            // Llamada a la API para eliminar un grupo
             apiServiceGrupos.eliminarGrupo(guid)
+
             APIRespuesta(
                 estado = true,
                 mensaje = "Grupo eliminado correctamente",
                 data = null
             )
         } catch (e: Exception) {
+            // Detectar si el error indica que ya se eliminó o un error genérico
+            val estado:Boolean
+            val mensajeError:String
+
+            if (e.message?.contains("was null but response body type was declared as non-null") == true) {
+                mensajeError = "Grupo eliminado correctamente"
+                estado = true
+            } else {
+                mensajeError = "Error al eliminar el grupo: ${e.message}"
+                estado = false
+            }
             APIRespuesta(
-                estado = false,
-                mensaje = "Error al eliminar el grupo: ${e.message}",
+                estado = estado,
+                mensaje = mensajeError,
                 data = null
             )
         }
     }
+
+
 }
 

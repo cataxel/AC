@@ -238,6 +238,7 @@ fun Grupos(controller: GruposController, actividadNombre: String, navController:
                                                     if(eliminarGrupo(grupo)){
                                                         showDialogEliminar = false
                                                         Toast.makeText(context, "Grupo eliminado", Toast.LENGTH_SHORT).show()
+                                                        navController.navigate("grupos/${actividadNombre}")
                                                     } else {
                                                         Toast.makeText(context, "Grupo NO eliminado", Toast.LENGTH_SHORT).show()
                                                     }
@@ -607,7 +608,5 @@ suspend fun eliminarGrupo(grupo: Grupo):Boolean {
     val grupoServicio = GruposServicioRetrofit(RetrofitClient.apiServiceGrupos)
     //val apiRespuesta = grupoServicio.eliminarGrupo(grupo)
     val apiRespuesta = grupoServicio.eliminarGrupo(grupo.guid)
-    Log.i("Beto", "apiRespuesta: $apiRespuesta")
-    Log.i("Beto", "apiRespuesta: ${apiRespuesta.estado}")
     return apiRespuesta.estado
 }
