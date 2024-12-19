@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import com.example.ac_a.Controller.Grupos.GruposController
 import com.example.ac_a.Model.Actividades.Actividad
 import com.example.ac_a.Model.Grupos.Grupo
+import com.example.ac_a.Model.Grupos.GrupoRequest
 import com.example.ac_a.service.Actividades.ActividadServicio
 import com.example.ac_a.service.Actividades.ActividadServicioRetrofit
 import com.example.ac_a.service.Actividades.interfaces.Actividades
@@ -123,7 +124,7 @@ fun Grupos(controller: GruposController, actividadNombre: String, navController:
                                     ),
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
-                                if(usuarioROL == "Administración"){
+                                if(usuarioROL != "Estudiante"){
                                     IconButton(onClick = {
                                         navController.navigate("crear_actializar_Grupo?id=${grupo.id}&guid=${grupo.guid}&descripcion=${grupo.descripcion}&ubicacion=${grupo.ubicacion}&hora_inicial=${grupo.hora_inicial}&hora_final=${grupo.hora_final}&fecha_inicial=${grupo.fecha_inicial}&fecha_final=${grupo.fecha_final}&capacidad=${grupo.capacidad}&usuario_nombre=${grupo.usuario_nombre}&actividad_descripcion=${grupo.actividad_descripcion}")
                                     }){
@@ -192,7 +193,7 @@ fun Grupos(controller: GruposController, actividadNombre: String, navController:
                                 return apiRespuesta.estado
                             }
                             Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
-                                if(usuarioROL == "Administración"){
+                                if(usuarioROL != "Estudiante"){
                                     IconButton(onClick = { showDialogEliminar = true }) {
                                         Icon(
                                             imageVector = androidx.compose.material.icons.Icons.Default.Delete,
@@ -218,7 +219,7 @@ fun Grupos(controller: GruposController, actividadNombre: String, navController:
 
                                 if (showDialogEliminar) {
                                     AlertDialog(
-                                        onDismissRequest = { showDialog = false }, // Cierra el diálogo al tocar fuera
+                                        onDismissRequest = { showDialogEliminar = false }, // Cierra el diálogo al tocar fuera
                                         title = { Text(text = "Grupo") },
                                         text = {
                                             Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
@@ -240,13 +241,14 @@ fun Grupos(controller: GruposController, actividadNombre: String, navController:
                                                     } else {
                                                         Toast.makeText(context, "Grupo NO eliminado", Toast.LENGTH_SHORT).show()
                                                     }
+                                                    isCargando = false
                                                 }
                                             }) {
                                                 Text("Aceptar")
                                             }
                                         },
                                         dismissButton = {
-                                            TextButton(onClick = { showDialog = false }) {
+                                            TextButton(onClick = { showDialogEliminar = false }) {
                                                 Text("Cancelar")
                                             }
                                         }
@@ -336,7 +338,7 @@ fun crear_actializar_Grupo(grupoActualizar: Grupo, navController: NavController)
     suspend fun submitForm(): Boolean{
         //val grupoServicio = GrupoServicio(NetworkClient.httpClient)
         val grupoServicio = GruposServicioRetrofit(RetrofitClient.apiServiceGrupos)
-        val grupo = Grupo(id = 0, guid = grupoActualizar.guid, usuario_nombre = usuario_nombre.guid, actividad_descripcion = actividad_descripcion.guid, descripcion = descripcion, ubicacion = ubicacion, hora_inicial = hora_inicial, hora_final = hora_final, fecha_inicial = fecha_inicial, fecha_final = fecha_final, capacidad = capacidad)
+        val grupo = GrupoRequest(usuario = usuario_nombre.guid, actividad = actividad_descripcion.guid, descripcion = descripcion, ubicacion = ubicacion, hora_inicial = hora_inicial, hora_final = hora_final, fecha_inicial = fecha_inicial, fecha_final = fecha_final, capacidad = capacidad)
 
         if(grupoActualizar.guid==""){ //Crear
             val apiRespuesta = grupoServicio.crearGrupo(grupo)
@@ -344,12 +346,18 @@ fun crear_actializar_Grupo(grupoActualizar: Grupo, navController: NavController)
         }
         else{ //Actualizar
             //val apiRespuesta = grupoServicio.actualizarGrupo(grupo)
-            val apiRespuesta = grupoServicio.actualizarGrupo(grupo.guid, grupo)
+            val apiRespuesta = grupoServicio.actualizarGrupo(grupoActualizar.guid, grupo)
             return apiRespuesta.estado
         }
     }
 
-    Column(Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp)).background(Color.White).verticalScroll(rememberScrollState()).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Button(onClick = {navController.popBackStack()}) {
             Icon(
                 imageVector = androidx.compose.material.icons.Icons.Default.ArrowBack,
@@ -599,5 +607,7 @@ suspend fun eliminarGrupo(grupo: Grupo):Boolean {
     val grupoServicio = GruposServicioRetrofit(RetrofitClient.apiServiceGrupos)
     //val apiRespuesta = grupoServicio.eliminarGrupo(grupo)
     val apiRespuesta = grupoServicio.eliminarGrupo(grupo.guid)
+    Log.i("Beto", "apiRespuesta: $apiRespuesta")
+    Log.i("Beto", "apiRespuesta: ${apiRespuesta.estado}")
     return apiRespuesta.estado
 }

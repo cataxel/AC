@@ -102,14 +102,17 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            if (usuarioROL =="Administración"){
+            if (usuarioROL != "Estudiante"){
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = {
-                        navController.navigate("crear_actializar_Actividad?guidActividad=${""}&nombre=${""}&descripcion=${""}")
+                    if (usuarioROL =="Administración"){
+                        Button(onClick = {
+                            navController.navigate("crear_actializar_Actividad?guidActividad=${""}&nombre=${""}&descripcion=${""}")
 
-                    }){
-                        Text(text = "Crear Actividad")
+                        }){
+                            Text(text = "Crear Actividad")
+                        }
                     }
+
                     Button(onClick = {
                         navController.navigate("crear_actializar_Grupo?id=${0}&guid=${""}&descripcion=${""}&ubicacion=${""}&hora_inicial=${""}&hora_final=${""}&fecha_inicial=${""}&fecha_final=${""}&capacidad=${0}&usuario_nombre=${""}&actividad_descripcion=${""}")
                     }) {

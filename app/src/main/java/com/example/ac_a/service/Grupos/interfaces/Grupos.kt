@@ -2,6 +2,7 @@ package com.example.ac_a.service.Grupos.interfaces
 
 import com.example.ac_a.APIRespuesta
 import com.example.ac_a.Model.Grupos.Grupo
+import com.example.ac_a.Model.Grupos.GrupoRequest
 import com.example.ac_a.Model.Grupos.GrupoResponse
 import org.ac.APIConf.APIConf
 import retrofit2.http.Body
@@ -23,10 +24,10 @@ interface GrupoRetrofit {
     suspend fun obtenerGrupo(): GrupoResponse
 
     @POST(APIConf.GRUPOS_ENDPOINT)
-    suspend fun crearGrupo(@Body grupo: Grupo): APIRespuesta<Grupo>
+    suspend fun crearGrupo(@Body grupo: GrupoRequest): APIRespuesta<Grupo>
 
     @PUT("${APIConf.GRUPOS_ENDPOINT}{guid}/")
-    suspend fun actualizarGrupo(@Path("guid") guid: String, @Body grupo: Grupo): APIRespuesta<Grupo>
+    suspend fun actualizarGrupo(@Path("guid") guid: String, @Body grupo: GrupoRequest): APIRespuesta<Grupo>
 
     @DELETE("${APIConf.GRUPOS_ENDPOINT}{guid}/")
     suspend fun eliminarGrupo(@Path("guid") guid: String): APIRespuesta<Grupo>

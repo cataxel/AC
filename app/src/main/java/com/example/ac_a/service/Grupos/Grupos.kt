@@ -80,6 +80,7 @@ class GrupoServicio(private val client: HttpClient) : Grupos {
 
     override suspend fun actualizarGrupo(grupo: Grupo): APIRespuesta<Grupo> {
         return try {
+
             // Crear los datos del formulario
             val grupoUpdateRequest = GrupoRequest(
                 usuario = grupo.usuario_nombre,
@@ -93,7 +94,6 @@ class GrupoServicio(private val client: HttpClient) : Grupos {
                 capacidad = grupo.capacidad
             )
 
-            Log.d("Beto", "Datos del formulario: $grupoUpdateRequest")
 
             val response: HttpResponse = client.put(APIConf.GRUPOS_ENDPOINT + grupo.guid + "/") {
                 contentType(ContentType.Application.Json)
@@ -169,7 +169,7 @@ class GruposServicioRetrofit(private val apiServiceGrupos: GrupoRetrofit) : Grup
         }
     }
 
-    override suspend fun crearGrupo(grupo: Grupo): APIRespuesta<Grupo> {
+    override suspend fun crearGrupo(grupo: GrupoRequest): APIRespuesta<Grupo> {
         return try {
             // Llamada a la API para crear un grupo
             val apiRespuesta = apiServiceGrupos.crearGrupo(grupo)
@@ -183,13 +183,10 @@ class GruposServicioRetrofit(private val apiServiceGrupos: GrupoRetrofit) : Grup
         }
     }
 
-    override suspend fun actualizarGrupo(
-        @Path(value = "guid") guid: String,
-        @Body grupo: Grupo
-    ): APIRespuesta<Grupo> {
+    override suspend fun actualizarGrupo(@Path(value = "guid") guid: String, @Body grupo: GrupoRequest): APIRespuesta<Grupo> {
         return try {
             // Llamada a la API para actualizar un grupo
-            val apiRespuesta = apiServiceGrupos.actualizarGrupo(grupo.guid, grupo)
+            val apiRespuesta = apiServiceGrupos.actualizarGrupo(guid, grupo)
             apiRespuesta
         } catch (e: Exception) {
             APIRespuesta(
@@ -203,8 +200,12 @@ class GruposServicioRetrofit(private val apiServiceGrupos: GrupoRetrofit) : Grup
     override suspend fun eliminarGrupo(@Path(value = "guid") guid: String): APIRespuesta<Grupo> {
         return try {
             // Llamada a la API para eliminar un grupo
-            val apiRespuesta = apiServiceGrupos.eliminarGrupo(guid)
-            apiRespuesta
+            apiServiceGrupos.eliminarGrupo(guid)
+            APIRespuesta(
+                estado = true,
+                mensaje = "Grupo eliminado correctamente",
+                data = null
+            )
         } catch (e: Exception) {
             APIRespuesta(
                 estado = false,
