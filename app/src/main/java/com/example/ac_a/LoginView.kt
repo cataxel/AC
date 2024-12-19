@@ -63,18 +63,24 @@ import androidx.navigation.compose.composable
 import com.example.ac_a.Controller.loginLogout.Controlador
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
+import org.ac.APIConf.RetrofitClient
 import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.Usuario
 import org.ac.service.Usuarios.Usuarios
+import org.ac.service.Usuarios.UsuariosService
 
 
 class LoginActivity : ComponentActivity() {
 
-    lateinit var usuarioService: Usuarios
+    //lateinit var usuarioService: Usuarios
+    lateinit var usuarioService: UsuariosService
+
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContent {
-            usuarioService = Usuarios(NetworkClient.httpClient)
+            val usuarioApi = RetrofitClient.apiService
+            //usuarioService = Usuarios(NetworkClient.httpClient)
+            usuarioService = UsuariosService(usuarioApi)
             val navController = rememberNavController()
             NavHost(navController = navController, startDestination = "Login") {
                 composable("Login") {
@@ -90,7 +96,7 @@ class LoginActivity : ComponentActivity() {
 }
 
 @Composable
-fun Login(navController: NavController, usuarioServicio:Usuarios){
+fun Login(navController: NavController, usuarioServicio:UsuariosService /*Usuarios*/){
     val imagenes = remember { CloudinaryImages() }
     val photoUrls = remember { mutableStateListOf<String>() }
     var isLoading by remember { mutableStateOf(true) }
@@ -120,7 +126,7 @@ fun Login(navController: NavController, usuarioServicio:Usuarios){
 }
 
 @Composable
-fun LoginOverlay(navController: NavController, usuarioServicio:Usuarios) {
+fun LoginOverlay(navController: NavController, usuarioServicio: UsuariosService /*Usuarios*/) {
     val context = LocalContext.current
     val sessionManager = UserSessionManager(context, NetworkClient.httpClient, usuarioServicio)
     val coroutineScope = rememberCoroutineScope()
@@ -206,7 +212,7 @@ fun PhotoCarousel(photoUrls: List<String>){
 
 
 @Composable
-fun Register(navController: NavController, usuarioServicio:Usuarios) {
+fun Register(navController: NavController, usuarioServicio:UsuariosService /*Usuarios*/) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val roles = remember { mutableStateListOf<Rol>() }
     var isLoading by remember { mutableStateOf(false) }
@@ -214,6 +220,7 @@ fun Register(navController: NavController, usuarioServicio:Usuarios) {
 
     LaunchedEffect(Unit) {
         try {
+            //val response = usuarioServicio.obtenerRol()
             val response = usuarioServicio.obtenerRol()
             roles.clear()
             roles.addAll(response.data ?: emptyList())

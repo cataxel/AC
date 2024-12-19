@@ -1,5 +1,6 @@
 package com.example.ac_a.Views.Grupos
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -45,7 +46,8 @@ fun Grupos(controller: GruposController, actividadNombre: String, navController:
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-    val usuarioROL by remember { mutableStateOf( UserSessionManager(context , NetworkClient.httpClient, Usuarios(NetworkClient.httpClient)).getRolUser()) }
+    //val usuarioROL by remember { mutableStateOf( UserSessionManager(context , NetworkClient.httpClient, Usuarios(NetworkClient.httpClient)).getRolUser()) }
+    val usuarioROL by remember {mutableStateOf( context.getSharedPreferences("user_session", Context.MODE_PRIVATE).getString("Rol","")) }
 
 
     LaunchedEffect(Unit) {
@@ -174,14 +176,15 @@ fun Grupos(controller: GruposController, actividadNombre: String, navController:
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                             val corrutinaScope = rememberCoroutineScope()
-                            val usuarioGUID by remember { mutableStateOf( UserSessionManager(context , NetworkClient.httpClient, Usuarios(NetworkClient.httpClient)).getUserId()) }
+                            //val usuarioGUID by remember { mutableStateOf( UserSessionManager(context , NetworkClient.httpClient, Usuarios(NetworkClient.httpClient)).getUserId()) }
+                            val usuarioGUID by remember {mutableStateOf( context.getSharedPreferences("user_session", Context.MODE_PRIVATE).getString("user_guid","")) }
                             var isCargando by remember { mutableStateOf(false) }
                             var showDialogEliminar by remember { mutableStateOf(false) }
                             var showDialog by remember { mutableStateOf(false) }
 
                             suspend fun submitForm(): Boolean{
                                 val inscripcionServicio = InscripcionServicio(NetworkClient.httpClient)
-                                val apiRespuesta = inscripcionServicio.crearInscripcion(usuarioGUID, grupo.guid)
+                                val apiRespuesta = inscripcionServicio.crearInscripcion(usuarioGUID?:"", grupo.guid)
                                 isCargando = false
                                 return apiRespuesta.estado
                             }

@@ -30,13 +30,18 @@ import com.example.ac_a.Views.Usuarios.Profile
 import com.example.ac_a.service.Cloudinary.CloudinaryImages
 import com.example.ac_a.service.Actividades.ActividadServicio
 import com.example.ac_a.service.Grupos.GrupoServicio
+import org.ac.APIConf.RetrofitClient
 import org.ac.Controller.Usuarios.ProfileController
 import org.ac.service.Usuarios.Usuarios
+import org.ac.service.Usuarios.UsuariosService
+import org.ac.service.Usuarios.interfaces.UsuarioApi
 import org.ac.sessionManager.interfaces.SessionManager
 
 @Composable
 fun App(sessionManager: SessionManager) {
-    val usuariosService = remember { Usuarios(NetworkClient.httpClient) }
+    //val usuariosService = remember { Usuarios(NetworkClient.httpClient) }
+    val usuarioApi = RetrofitClient.apiService
+    val usuariosService = remember { UsuariosService(usuarioApi)}
     val actividadService = remember { ActividadServicio(NetworkClient.httpClient) }
     val cloudinaryService = remember { CloudinaryImages() }
     val grupoService = remember { GrupoServicio(NetworkClient.httpClient) }

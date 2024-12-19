@@ -27,18 +27,22 @@ import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.unit.dp
 import com.example.ac_a.ui.theme.ACaTheme
 import org.ac.APIConf.NetworkClient
+import org.ac.APIConf.RetrofitClient
 import org.ac.service.Usuarios.Usuarios
+import org.ac.service.Usuarios.UsuariosService
 import org.ac.sessionManager.UserSessionManager
 import org.ac.sessionManager.interfaces.SessionManager
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var sessionManager: SessionManager
-    private lateinit var usuarioService: Usuarios
-
+    //private lateinit var usuarioService: Usuarios
+    private lateinit var usuarioService: UsuariosService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        usuarioService = Usuarios(NetworkClient.httpClient)
+        val usuarioApi = RetrofitClient.apiService
+        //usuarioService = Usuarios(NetworkClient.httpClient)
+        usuarioService = UsuariosService(usuarioApi)
         sessionManager = UserSessionManager(this, NetworkClient.httpClient,usuarioService)
 
         enableEdgeToEdge()

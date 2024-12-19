@@ -8,9 +8,10 @@ import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Model.Usuarios.UsuarioRespuesta
 import org.ac.service.Usuarios.Usuarios
+import org.ac.service.Usuarios.UsuariosService
 import java.io.File
 
-class UsuariosController(private val usuariosService: Usuarios) {
+class UsuariosController(private val usuariosService: UsuariosService /*Usuarios*/) {
 
     // Metodo para obtener la lista de usuarios
     suspend fun obtenerUsuarios(): APIRespuesta<List<Usuario>> {
@@ -45,7 +46,7 @@ class UsuariosController(private val usuariosService: Usuarios) {
 }
 
 class ProfileController(
-    private val usuariosService: Usuarios,
+    private val usuariosService: UsuariosService /*Usuarios*/,
     private val cloudinaryService: CloudinaryImages
 ) {
 
@@ -104,7 +105,6 @@ class ProfileController(
 
     suspend fun ObtenerPerfil(usuarioId: String): Pair<UsuarioRespuesta, ProfileRespuesta>? {
         val perfilRespuesta = usuariosService.obtenerPerfil(usuarioId)
-
         // Verificar si el perfil fue encontrado
         if (perfilRespuesta.estado && perfilRespuesta.data != null) {
             val usuario = usuariosService.obtenerUsuarioId(usuarioId)
@@ -113,8 +113,6 @@ class ProfileController(
                 return Pair(usuario.data, perfilRespuesta.data)
             }
         }
-
-        // Si no se encuentra el perfil, devuelve null o maneja el caso específico
         return null
     }
 

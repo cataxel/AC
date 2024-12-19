@@ -10,6 +10,9 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import org.ac.service.Usuarios.interfaces.UsuarioApi
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 object APIConf {
     const val BASE_URL = "https://backendac-w661.onrender.com"
@@ -65,4 +68,17 @@ object CloudinaryConf {
             "api_secret" to API_SECRET
         )
     )
+}
+
+
+object RetrofitClient {
+    private const val BASE_URL = APIConf.BASE_URL
+
+    val apiService: UsuarioApi by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(UsuarioApi::class.java)
+    }
 }

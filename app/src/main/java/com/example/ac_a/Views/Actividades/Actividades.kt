@@ -1,5 +1,6 @@
 package com.example.ac_a.Views.Actividades
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -40,7 +41,8 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-    val usuarioROL by remember { mutableStateOf( UserSessionManager(context , NetworkClient.httpClient, Usuarios(NetworkClient.httpClient)).getRolUser()) }
+    //val usuarioROL by remember { mutableStateOf( UserSessionManager(context , NetworkClient.httpClient, Usuarios(NetworkClient.httpClient)).getRolUser()) }
+    val usuarioROL by remember {mutableStateOf( context.getSharedPreferences("user_session", Context.MODE_PRIVATE).getString("Rol","")) }
 
 
     LaunchedEffect(Unit) {

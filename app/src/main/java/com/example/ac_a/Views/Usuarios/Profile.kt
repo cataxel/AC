@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -88,7 +87,7 @@ fun Profile(controller: ProfileController, usuarioId: String) {
     } else if (errorMessage != null) {
         // Si hubo un error, mostramos el mensaje de error
         Text(text = errorMessage ?: "Error desconocido", color = Color.Red, modifier = Modifier.padding(16.dp))
-        SimpleAlertDialog(mensaje = errorMessage ?: "Error desconocido") {
+        SimpleAlertDialog(mensaje = errorMessage ?: "Error desconocido", title = "Error") {
             // Cuando se cierra el diálogo, puedes hacer algo si lo deseas
             // Por ejemplo, limpiar el mensaje de error:
             errorMessage = null
@@ -141,7 +140,7 @@ fun Profile(controller: ProfileController, usuarioId: String) {
             )
             // Información del perfil
             Column() {
-                InfoRow("Nombre", usuario.nombre)
+                InfoRow("Nombre", perfil.usuario)
 
                 InfoRow("Correo", usuario.correo)
 
@@ -426,7 +425,7 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
 
         // Mostrar mensaje de éxito
         successMessage?.let {
-            SimpleAlertDialog(mensaje = it) {
+            SimpleAlertDialog(mensaje = it, title = "Éxito") {
                 // Llamar a esta función cuando el usuario presiona "Aceptar" en el diálogo de éxito
                 successMessage = null
                 onCancel()
@@ -435,7 +434,7 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
 
         // Si hay un mensaje de error, mostramos el diálogo
         errorMessage?.let {
-            SimpleAlertDialog(mensaje = it) {
+            SimpleAlertDialog(mensaje = it, title = "Error") {
                 // Llamar a esta función cuando el usuario presiona "Aceptar" en el diálogo de error
                 errorMessage = null
             }
@@ -444,13 +443,13 @@ fun PerfilForm(usuarioId: String, controller: ProfileController, onCancel: () ->
 }
 
 @Composable
-fun SimpleAlertDialog(mensaje: String, onDismiss: () -> Unit) {
+fun SimpleAlertDialog(mensaje: String,title:String, onDismiss: () -> Unit) {
     var showDialog by remember { mutableStateOf(true) }
 
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false }, // Cierra el diálogo al tocar fuera
-            title = { Text(text = "Error") },
+            title = { Text(text = title) },
             text = { Text(mensaje) },
             confirmButton = {
                 TextButton(onClick = {

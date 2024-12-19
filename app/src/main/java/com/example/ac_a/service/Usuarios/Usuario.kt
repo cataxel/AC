@@ -27,6 +27,7 @@ import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Model.Usuarios.UsuarioRespuesta
+import org.ac.service.Usuarios.interfaces.UsuarioApi
 import org.ac.service.Usuarios.interfaces.Usuarios
 
 class Usuarios(private val client:HttpClient):Usuarios {
@@ -172,6 +173,91 @@ class Usuarios(private val client:HttpClient):Usuarios {
             APIRespuesta(
                 estado = false,
                 mensaje = "Error al obtener el perfil: ${e.localizedMessage}",
+                data = null
+            )
+        }
+    }
+
+}
+
+class UsuariosService(private val apiService: UsuarioApi) : Usuarios {
+    override suspend fun obtenerRol(): APIRespuesta<List<Rol>> {
+        return try {
+            val response: List<Rol> = apiService.obtenerRol()
+
+            APIRespuesta(
+                estado = true,
+                mensaje = "Operación exitosa",
+                data = response
+            )
+        } catch (e: Exception) {
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error: ${e.message}",
+                data = emptyList()
+            )
+        }
+
+    }
+
+    override suspend fun obtenerUsuariosAll(): APIRespuesta<List<UsuarioRespuesta>> {
+        return try {
+            // Llamada a la API utilizando Retrofit
+            val usuarios: List<UsuarioRespuesta> = apiService.obtenerUsuariosAll()
+
+            // Crear y devolver la respuesta envuelta en APIRespuesta
+            APIRespuesta(
+                estado = true,
+                mensaje = "Operación exitosa",
+                data = usuarios
+            )
+        } catch (e: Exception) {
+            // Manejo de errores (puedes personalizar según tu lógica)
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error: ${e.message}",
+                data = emptyList() // Puedes retornar emptyList() o null si prefieres
+            )
+        }
+    }
+
+    override suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun obtenerUsuarioId(usuarioId: String): APIRespuesta<UsuarioRespuesta> {
+        return try {
+            val usuario: APIRespuesta<UsuarioRespuesta> = apiService.obtenerUsuarioId(usuarioId)
+            usuario
+        }catch (e: Exception){
+         APIRespuesta(
+            estado = false,
+            mensaje = "Error: ${e.message}",
+            data = null
+        )
+        }
+    }
+
+    override suspend fun crearUsuario(usuario: Usuario): APIRespuesta<UsuarioRespuesta> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun crearPerfil(perfil: Profile): APIRespuesta<ProfileRespuesta> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun modificarPerfil(perfil: ProfileModificar): APIRespuesta<ProfileModificar> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun obtenerPerfil(usuarioId: String): APIRespuesta<ProfileRespuesta> {
+        return try {
+            val perfil: APIRespuesta<ProfileRespuesta> = apiService.obtenerPerfil(usuarioId)
+            perfil
+        }catch (e: Exception){
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error: ${e.message}",
                 data = null
             )
         }

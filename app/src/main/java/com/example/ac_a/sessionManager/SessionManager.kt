@@ -17,13 +17,14 @@ import kotlinx.serialization.json.Json
 import org.ac.APIConf.APIConf
 import org.ac.Model.Usuarios.TokenSession
 import org.ac.service.Usuarios.Usuarios
+import org.ac.service.Usuarios.UsuariosService
 import org.ac.sessionManager.interfaces.SessionManager
 
 
 class UserSessionManager(
     private val context: Context,
     private val client:HttpClient,
-    private val usuarioServicio: Usuarios
+    private val usuarioServicio: UsuariosService /*Usuarios*/
 ):SessionManager {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_session",Context.MODE_PRIVATE)
     override fun isUserLogginIn(): Boolean {
