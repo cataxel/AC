@@ -11,6 +11,14 @@ data class Rol(
 )
 
 @Serializable
+data class RolRespuesta(
+    val count: Int,
+    val next: String?,
+    val previous: String?,
+    val results: List<Rol>
+)
+
+@Serializable
 data class Profile(
     var guid: String,
     val usuario: String,

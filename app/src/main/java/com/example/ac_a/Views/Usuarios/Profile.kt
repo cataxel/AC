@@ -135,7 +135,7 @@ fun Profile(controller: ProfileController, usuarioId: String) {
             // Título "Información"
             Text(
                 text = "Información",
-                style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
+                style =  MaterialTheme.typography.titleLarge.copy(color = Color.White),
                 modifier = Modifier.padding(top = 16.dp)
             )
             // Información del perfil

@@ -25,6 +25,7 @@ import org.ac.Model.Usuarios.Profile
 import org.ac.Model.Usuarios.ProfileModificar
 import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Rol
+import org.ac.Model.Usuarios.RolRespuesta
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Model.Usuarios.UsuarioRespuesta
 import org.ac.service.Usuarios.interfaces.UsuarioApi
@@ -183,12 +184,14 @@ class Usuarios(private val client:HttpClient):Usuarios {
 class UsuariosService(private val apiService: UsuarioApi) : Usuarios {
     override suspend fun obtenerRol(): APIRespuesta<List<Rol>> {
         return try {
-            val response: List<Rol> = apiService.obtenerRol()
+            // Obtener la respuesta completa, que ahora es de tipo RolRespuesta
+            val response: RolRespuesta = apiService.obtenerRol()
 
+            // Devolver solo los resultados en la respuesta
             APIRespuesta(
                 estado = true,
                 mensaje = "Operación exitosa",
-                data = response
+                data = response.results
             )
         } catch (e: Exception) {
             APIRespuesta(
@@ -197,7 +200,6 @@ class UsuariosService(private val apiService: UsuarioApi) : Usuarios {
                 data = emptyList()
             )
         }
-
     }
 
     override suspend fun obtenerUsuariosAll(): APIRespuesta<List<UsuarioRespuesta>> {
@@ -239,11 +241,29 @@ class UsuariosService(private val apiService: UsuarioApi) : Usuarios {
     }
 
     override suspend fun crearUsuario(usuario: Usuario): APIRespuesta<UsuarioRespuesta> {
-        TODO("Not yet implemented")
+        return try {
+            val usuariores: APIRespuesta<UsuarioRespuesta> = apiService.crearUsuario(usuario)
+            usuariores
+        }catch (e: Exception){
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error: ${e.message}",
+                data = null
+            )
+        }
     }
 
     override suspend fun crearPerfil(perfil: Profile): APIRespuesta<ProfileRespuesta> {
-        TODO("Not yet implemented")
+        return try {
+            val perfilres: APIRespuesta<ProfileRespuesta> = apiService.crearPerfil(perfil)
+            perfilres
+        }catch (e: Exception){
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error: ${e.message}",
+                data = null
+            )
+        }
     }
 
     override suspend fun modificarPerfil(perfil: ProfileModificar): APIRespuesta<ProfileModificar> {

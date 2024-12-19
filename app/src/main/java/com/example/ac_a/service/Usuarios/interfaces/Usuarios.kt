@@ -6,9 +6,12 @@ import org.ac.Model.Usuarios.Profile
 import org.ac.Model.Usuarios.ProfileModificar
 import org.ac.Model.Usuarios.ProfileRespuesta
 import org.ac.Model.Usuarios.Rol
+import org.ac.Model.Usuarios.RolRespuesta
 import org.ac.Model.Usuarios.Usuario
 import org.ac.Model.Usuarios.UsuarioRespuesta
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import java.io.File
 
@@ -25,11 +28,16 @@ interface Usuarios {
 
 interface UsuarioApi {
     @GET(APIConf.ROLES_ENDPOINT)
-    suspend fun obtenerRol(): List<Rol>
+    suspend fun obtenerRol(): RolRespuesta
     @GET(APIConf.USUARIOS_ENDPOINT)
     suspend fun obtenerUsuariosAll(): List<UsuarioRespuesta>
     @GET("${APIConf.USUARIOS_ENDPOINT}{usuarioId}")
     suspend fun obtenerUsuarioId(@Path("usuarioId") usuarioId:String): APIRespuesta<UsuarioRespuesta>
     @GET("${APIConf.PERFIL_ENDPOINT}{usuarioId}")
     suspend fun obtenerPerfil(@Path("usuarioId") usuarioId: String): APIRespuesta<ProfileRespuesta>
+    @POST(APIConf.USUARIOS_ENDPOINT)
+    suspend fun crearUsuario(@Body usuario: Usuario): APIRespuesta<UsuarioRespuesta>
+    @POST(APIConf.PERFIL_ENDPOINT)
+    suspend fun crearPerfil(@Body perfil: Profile): APIRespuesta<ProfileRespuesta>
+
 }
