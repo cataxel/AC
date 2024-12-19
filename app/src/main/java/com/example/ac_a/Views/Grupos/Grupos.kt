@@ -29,6 +29,7 @@ import com.example.ac_a.Controller.Grupos.GruposController
 import com.example.ac_a.Model.Actividades.Actividad
 import com.example.ac_a.Model.Grupos.Grupo
 import com.example.ac_a.service.Actividades.ActividadServicio
+import com.example.ac_a.service.Actividades.ActividadServicioRetrofit
 import com.example.ac_a.service.Actividades.interfaces.Actividades
 import com.example.ac_a.service.Grupos.GrupoServicio
 import com.example.ac_a.service.Grupos.GruposServicioRetrofit
@@ -525,9 +526,10 @@ fun crear_actializar_Grupo(grupoActualizar: Grupo, navController: NavController)
 
             LaunchedEffect(Unit) {
                 try {
-                    val response = ActividadServicio(NetworkClient.httpClient).obtenerActividad()
+                    //val response = ActividadServicio(NetworkClient.httpClient).obtenerActividad()
+                    val response = ActividadServicioRetrofit(RetrofitClient.apiServiceActividades).obtenerActividad()
                     actividades.clear()
-                    actividades.addAll(response.data ?: emptyList())
+                    actividades.addAll(response.results /*.data*/ ?: emptyList())
                     estaListo = true
                     for (actividad in actividades) {
                         if(actividad.nombre == grupoActualizar.actividad_descripcion){
@@ -593,7 +595,9 @@ fun crear_actializar_Grupo(grupoActualizar: Grupo, navController: NavController)
 }
 
 suspend fun eliminarGrupo(grupo: Grupo):Boolean {
-    val grupoServicio = GrupoServicio(NetworkClient.httpClient)
-    val apiRespuesta = grupoServicio.eliminarGrupo(grupo)
+    //val grupoServicio = GrupoServicio(NetworkClient.httpClient)
+    val grupoServicio = GruposServicioRetrofit(RetrofitClient.apiServiceGrupos)
+    //val apiRespuesta = grupoServicio.eliminarGrupo(grupo)
+    val apiRespuesta = grupoServicio.eliminarGrupo(grupo.guid)
     return apiRespuesta.estado
 }
