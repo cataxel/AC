@@ -5,6 +5,7 @@ import com.example.ac_a.APIRespuesta
 import com.example.ac_a.Model.Actividades.Actividad
 import com.example.ac_a.Model.Actividades.ActividadResponse
 import com.example.ac_a.service.Actividades.interfaces.Actividades
+import com.example.ac_a.service.Actividades.interfaces.ActividadesRetrofit
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -135,3 +136,64 @@ class ActividadServicio(private val client: HttpClient) : Actividades {
 
 }
 
+class ActividadServicioRetrofit(private val apiServiceActividades: ActividadesRetrofit) : ActividadesRetrofit {
+    override suspend fun obtenerActividad(): ActividadResponse {
+        return try {
+            // Llamar a la API para obtener la actividad
+            val actividadResponse = apiServiceActividades.obtenerActividad()
+
+            // Devolver la respuesta directamente
+            actividadResponse
+
+        } catch (e: Exception) {
+            // Manejo de errores
+            throw Exception("Error al obtener las actividades: ${e.message}")
+        }
+    }
+
+    override suspend fun crearActividad(actividad: Actividad): APIRespuesta<Actividad> {
+        return try {
+            // Llamada POST para crear la actividad
+            val apiRespuesta = apiServiceActividades.crearActividad(actividad)
+            apiRespuesta
+        } catch (e: Exception) {
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al crear la actividad: ${e.message}",
+                data = null
+            )
+        }
+    }
+
+    override suspend fun actualizarActividad(
+        guid: String,
+        actividad: Actividad
+    ): APIRespuesta<Actividad> {
+        return try {
+            // Llamada PUT para actualizar la actividad
+            val apiRespuesta = apiServiceActividades.actualizarActividad(actividad.guid, actividad)
+            apiRespuesta
+        } catch (e: Exception) {
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al actualizar la actividad: ${e.message}",
+                data = null
+            )
+        }
+    }
+
+    override suspend fun eliminarActividad(guid: String): APIRespuesta<Actividad> {
+        return try {
+            // Llamada DELETE para eliminar la actividad
+            val apiRespuesta = apiServiceActividades.eliminarActividad(guid)
+            apiRespuesta
+        } catch (e: Exception) {
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al eliminar la actividad: ${e.message}",
+                data = null
+            )
+        }
+    }
+
+}

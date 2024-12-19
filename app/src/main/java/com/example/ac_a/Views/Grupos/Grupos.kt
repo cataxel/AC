@@ -31,10 +31,12 @@ import com.example.ac_a.Model.Grupos.Grupo
 import com.example.ac_a.service.Actividades.ActividadServicio
 import com.example.ac_a.service.Actividades.interfaces.Actividades
 import com.example.ac_a.service.Grupos.GrupoServicio
+import com.example.ac_a.service.Grupos.GruposServicioRetrofit
 import com.example.ac_a.service.Grupos.InscripcionServicio
 import com.example.ac_a.ui.theme.LightBlue80
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
+import org.ac.APIConf.RetrofitClient
 import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.UsuarioRespuesta
 import org.ac.service.Usuarios.Usuarios
@@ -331,7 +333,8 @@ fun crear_actializar_Grupo(grupoActualizar: Grupo, navController: NavController)
 
     val corrutinaScope = rememberCoroutineScope()
     suspend fun submitForm(): Boolean{
-        val grupoServicio = GrupoServicio(NetworkClient.httpClient)
+        //val grupoServicio = GrupoServicio(NetworkClient.httpClient)
+        val grupoServicio = GruposServicioRetrofit(RetrofitClient.apiServiceGrupos)
         val grupo = Grupo(id = 0, guid = grupoActualizar.guid, usuario_nombre = usuario_nombre.guid, actividad_descripcion = actividad_descripcion.guid, descripcion = descripcion, ubicacion = ubicacion, hora_inicial = hora_inicial, hora_final = hora_final, fecha_inicial = fecha_inicial, fecha_final = fecha_final, capacidad = capacidad)
 
         if(grupoActualizar.guid==""){ //Crear
@@ -339,7 +342,8 @@ fun crear_actializar_Grupo(grupoActualizar: Grupo, navController: NavController)
             return apiRespuesta.estado
         }
         else{ //Actualizar
-            val apiRespuesta = grupoServicio.actualizarGrupo(grupo)
+            //val apiRespuesta = grupoServicio.actualizarGrupo(grupo)
+            val apiRespuesta = grupoServicio.actualizarGrupo(grupo.guid, grupo)
             return apiRespuesta.estado
         }
     }

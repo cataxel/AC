@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,12 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.unit.dp
 import com.example.ac_a.ui.theme.ACaTheme
 import org.ac.APIConf.NetworkClient
 import org.ac.APIConf.RetrofitClient
-import org.ac.service.Usuarios.Usuarios
 import org.ac.service.Usuarios.UsuariosService
 import org.ac.sessionManager.UserSessionManager
 import org.ac.sessionManager.interfaces.SessionManager
@@ -40,7 +37,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var usuarioService: UsuariosService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val usuarioApi = RetrofitClient.apiService
+        val usuarioApi = RetrofitClient.apiServiceUsuarios
         //usuarioService = Usuarios(NetworkClient.httpClient)
         usuarioService = UsuariosService(usuarioApi)
         sessionManager = UserSessionManager(this, NetworkClient.httpClient,usuarioService)

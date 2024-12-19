@@ -2,7 +2,6 @@ package com.example.ac_a
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -49,7 +48,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -66,7 +64,6 @@ import org.ac.APIConf.NetworkClient
 import org.ac.APIConf.RetrofitClient
 import org.ac.Model.Usuarios.Rol
 import org.ac.Model.Usuarios.Usuario
-import org.ac.service.Usuarios.Usuarios
 import org.ac.service.Usuarios.UsuariosService
 
 
@@ -78,7 +75,7 @@ class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContent {
-            val usuarioApi = RetrofitClient.apiService
+            val usuarioApi = RetrofitClient.apiServiceUsuarios
             //usuarioService = Usuarios(NetworkClient.httpClient)
             usuarioService = UsuariosService(usuarioApi)
             val navController = rememberNavController()

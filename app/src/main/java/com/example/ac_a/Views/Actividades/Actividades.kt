@@ -30,8 +30,10 @@ import com.example.ac_a.Model.Actividades.Actividad
 import androidx.navigation.NavController
 import com.example.ac_a.Navegation
 import com.example.ac_a.service.Actividades.ActividadServicio
+import com.example.ac_a.service.Actividades.ActividadServicioRetrofit
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
+import org.ac.APIConf.RetrofitClient
 import org.ac.service.Usuarios.Usuarios
 import org.ac.sessionManager.UserSessionManager
 
@@ -270,7 +272,9 @@ fun crear_actializar_Actividad(navController: NavController, guidActividad: Stri
 
     val corrutinaScope = rememberCoroutineScope()
     suspend fun submitForm(): Boolean{
-        val inscripcionServicio = ActividadServicio(NetworkClient.httpClient)
+        //val inscripcionServicio = ActividadServicio(NetworkClient.httpClient)
+        val apiService = RetrofitClient.apiServiceActividades
+        val inscripcionServicio = ActividadServicioRetrofit(apiService)
         val actividad = Actividad(id=0, guid=guidActividad, nombre, descripcion)
         isLoading = false
         if(guidActividad==""){ //Crear
@@ -278,7 +282,8 @@ fun crear_actializar_Actividad(navController: NavController, guidActividad: Stri
             return apiRespuesta.estado
         }
         else{ //Actualizar
-            val apiRespuesta = inscripcionServicio.actualizarActividad(actividad)
+            val apiRespuesta = inscripcionServicio.actualizarActividad(actividad.guid,actividad)
+            //val apiRespuesta = inscripcionServicio.actualizarActividad(actividad)
             return apiRespuesta.estado
         }
     }
@@ -337,7 +342,10 @@ fun crear_actializar_Actividad(navController: NavController, guidActividad: Stri
 }
 
 suspend fun eliminarActividad(actividad: Actividad):Boolean {
-    val actividadServicio = ActividadServicio(NetworkClient.httpClient)
-    val apiRespuesta = actividadServicio.eliminarActividad(actividad)
+    //val actividadServicio = ActividadServicio(NetworkClient.httpClient)
+    val apiService = RetrofitClient.apiServiceActividades
+    val actividadServicio = ActividadServicioRetrofit(apiService)
+    val apiRespuesta = actividadServicio.eliminarActividad(actividad.guid)
+    //val apiRespuesta = actividadServicio.eliminarActividad(actividad)
     return apiRespuesta.estado
 }

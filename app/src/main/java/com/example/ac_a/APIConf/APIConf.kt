@@ -1,6 +1,8 @@
 package org.ac.APIConf
 
 import com.cloudinary.Cloudinary
+import com.example.ac_a.service.Actividades.interfaces.ActividadesRetrofit
+import com.example.ac_a.service.Grupos.interfaces.GrupoRetrofit
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpResponseValidator
@@ -74,11 +76,27 @@ object CloudinaryConf {
 object RetrofitClient {
     private const val BASE_URL = APIConf.BASE_URL
 
-    val apiService: UsuarioApi by lazy {
+    val apiServiceUsuarios: UsuarioApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(UsuarioApi::class.java)
+    }
+
+    val apiServiceActividades: ActividadesRetrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ActividadesRetrofit::class.java)
+    }
+
+    val apiServiceGrupos: GrupoRetrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(GrupoRetrofit::class.java)
     }
 }

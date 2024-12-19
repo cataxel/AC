@@ -5,6 +5,7 @@ import com.example.ac_a.APIRespuesta
 import com.example.ac_a.Model.Grupos.Grupo
 import com.example.ac_a.Model.Grupos.GrupoResponse
 import com.example.ac_a.Model.Grupos.GrupoRequest
+import com.example.ac_a.service.Grupos.interfaces.GrupoRetrofit
 import com.example.ac_a.service.Grupos.interfaces.Grupos
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -19,6 +20,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import org.ac.APIConf.APIConf
+import retrofit2.http.Body
+import retrofit2.http.Path
 
 class GrupoServicio(private val client: HttpClient) : Grupos {
     override suspend fun obtenerGrupo(): APIRespuesta<List<Grupo>> {
@@ -150,3 +153,65 @@ class GrupoServicio(private val client: HttpClient) : Grupos {
         }
     }
 }
+
+class GruposServicioRetrofit(private val apiServiceGrupos: GrupoRetrofit) : GrupoRetrofit {
+
+    override suspend fun obtenerGrupo(): GrupoResponse {
+        return try {
+            // Llamada a la API para obtener los grupos
+            val grupoResponse = apiServiceGrupos.obtenerGrupo()
+
+            grupoResponse
+
+        } catch (e: Exception) {
+            // Manejo de errores
+            throw Exception("Error al obtener las actividades: ${e.message}")
+        }
+    }
+
+    override suspend fun crearGrupo(grupo: Grupo): APIRespuesta<Grupo> {
+        return try {
+            // Llamada a la API para crear un grupo
+            val apiRespuesta = apiServiceGrupos.crearGrupo(grupo)
+            apiRespuesta
+        } catch (e: Exception) {
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al crear el grupo: ${e.message}",
+                data = null
+            )
+        }
+    }
+
+    override suspend fun actualizarGrupo(
+        @Path(value = "guid") guid: String,
+        @Body grupo: Grupo
+    ): APIRespuesta<Grupo> {
+        return try {
+            // Llamada a la API para actualizar un grupo
+            val apiRespuesta = apiServiceGrupos.actualizarGrupo(grupo.guid, grupo)
+            apiRespuesta
+        } catch (e: Exception) {
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al actualizar el grupo: ${e.message}",
+                data = null
+            )
+        }
+    }
+
+    override suspend fun eliminarGrupo(@Path(value = "guid") guid: String): APIRespuesta<Grupo> {
+        return try {
+            // Llamada a la API para eliminar un grupo
+            val apiRespuesta = apiServiceGrupos.eliminarGrupo(guid)
+            apiRespuesta
+        } catch (e: Exception) {
+            APIRespuesta(
+                estado = false,
+                mensaje = "Error al eliminar el grupo: ${e.message}",
+                data = null
+            )
+        }
+    }
+}
+
