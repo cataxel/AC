@@ -11,6 +11,7 @@ import java.io.File
 
 interface Usuarios {
     suspend fun obtenerRol(): APIRespuesta<List<Rol>>
+    suspend fun obtenerUsuariosAll(): APIRespuesta<List<UsuarioRespuesta>>
     suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>>
     suspend fun obtenerUsuarioId(usuarioId:String): APIRespuesta<UsuarioRespuesta>
     suspend fun crearUsuario(usuario: Usuario): APIRespuesta<UsuarioRespuesta>

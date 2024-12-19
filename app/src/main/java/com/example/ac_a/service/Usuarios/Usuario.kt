@@ -49,6 +49,22 @@ class Usuarios(private val client:HttpClient):Usuarios {
         )
     }
 
+    override suspend fun obtenerUsuariosAll(): APIRespuesta<List<UsuarioRespuesta>> {
+        val response: HttpResponse = client.get(APIConf.USUARIOS_ENDPOINT) {
+            contentType(ContentType.Application.Json)
+        }
+        val responseBody = response.bodyAsText()
+        val jsonObject = Json.parseToJsonElement(responseBody).jsonObject
+        val resultsJson = jsonObject["results"] ?: throw IllegalStateException("No se encontró el campo 'results'")
+        val usuarios = Json.decodeFromJsonElement<List<UsuarioRespuesta>>(resultsJson)
+
+        return APIRespuesta(
+            estado = true, // Asume que la operación fue exitosa
+            mensaje = "Operación exitosa",
+            data = usuarios
+        )
+    }
+
 
     override suspend fun obtenerUsuario(): APIRespuesta<List<Usuario>> {
         val response: HttpResponse = client.get(APIConf.USUARIOS_ENDPOINT) {

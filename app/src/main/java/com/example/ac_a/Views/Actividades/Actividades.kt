@@ -31,12 +31,17 @@ import com.example.ac_a.Navegation
 import com.example.ac_a.service.Actividades.ActividadServicio
 import kotlinx.coroutines.launch
 import org.ac.APIConf.NetworkClient
+import org.ac.service.Usuarios.Usuarios
+import org.ac.sessionManager.UserSessionManager
 
 @Composable
 fun Actividad(controller: ActividadesController, usuarioId: String,navController: NavController) {
     var actividades by remember { mutableStateOf(listOf<Actividad>()) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+    val usuarioROL by remember { mutableStateOf( UserSessionManager(context , NetworkClient.httpClient, Usuarios(NetworkClient.httpClient)).getRolUser()) }
+
 
     LaunchedEffect(Unit) {
         try {
@@ -93,12 +98,22 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            Button(onClick = {
-                navController.navigate("crear_actializar_Actividad?guidActividad=${""}&nombre=${""}&descripcion=${""}")
+            if (usuarioROL =="Administración"){
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = {
+                        navController.navigate("crear_actializar_Actividad?guidActividad=${""}&nombre=${""}&descripcion=${""}")
 
-            }){
-                Text(text = "Crear actividad")
+                    }){
+                        Text(text = "Crear Actividad")
+                    }
+                    Button(onClick = {
+                        navController.navigate("crear_actializar_Grupo?id=${0}&guid=${""}&descripcion=${""}&ubicacion=${""}&hora_inicial=${""}&hora_final=${""}&fecha_inicial=${""}&fecha_final=${""}&capacidad=${0}&usuario_nombre=${""}&actividad_descripcion=${""}")
+                    }) {
+                        Text(text = "Crear Grupo")
+                    }
+                }
             }
+
             Text(
                 text = "Número de actividades: ${actividades.size}",
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -132,15 +147,20 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                                 ),
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
-                            IconButton(onClick = {
-                                navController.navigate("crear_actializar_Actividad?guidActividad=${actividad.guid}&nombre=${actividad.nombre}&descripcion=${actividad.descripcion}")
-                            }){
-                                Icon(
-                                    imageVector = androidx.compose.material.icons.Icons.Default.Edit,
-                                    contentDescription = "Actualizar",
-                                    tint = Color.Green
-                                )
+                            if(usuarioROL == "Administración"){
+                                IconButton(onClick = {
+                                    navController.navigate("crear_actializar_Actividad?guidActividad=${actividad.guid}&nombre=${actividad.nombre}&descripcion=${actividad.descripcion}")
+                                }){
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Edit,
+                                        contentDescription = "Actualizar",
+                                        tint = Color.Green
+                                    )
+                                }
+                            } else{
+                                Text("...")
                             }
+
                         }
 
                         Text(
@@ -151,7 +171,6 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                             ),
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
-                        val context = LocalContext.current
                         val corrutinaScope = rememberCoroutineScope()
                         var isLoadingDelete by remember { mutableStateOf(false) }
                         var showDialog by remember { mutableStateOf(false) }
@@ -193,15 +212,20 @@ fun Actividad(controller: ActividadesController, usuarioId: String,navController
                         }
 
                         Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
-                            IconButton(onClick = {
-                                showDialog = true
-                            }){
-                                Icon(
-                                    imageVector = androidx.compose.material.icons.Icons.Default.Delete,
-                                    contentDescription = "Eliminar",
-                                    tint = Color.Red
-                                )
+                            if (usuarioROL =="Administración"){
+                                IconButton(onClick = {
+                                    showDialog = true
+                                }){
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Delete,
+                                        contentDescription = "Eliminar",
+                                        tint = Color.Red
+                                    )
+                                }
+                            } else{
+                                Text("...")
                             }
+
                             Button(
                                 onClick = {
                                     navController.navigate("grupos/${actividad.nombre}")

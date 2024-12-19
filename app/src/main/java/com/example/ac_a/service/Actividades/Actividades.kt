@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.ac_a.APIRespuesta
 import com.example.ac_a.Model.Actividades.Actividad
 import com.example.ac_a.Model.Actividades.ActividadResponse
-import com.example.ac_a.Model.Inscripciones.Inscripcion
 import com.example.ac_a.service.Actividades.interfaces.Actividades
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -16,10 +15,8 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.ac.APIConf.APIConf
 

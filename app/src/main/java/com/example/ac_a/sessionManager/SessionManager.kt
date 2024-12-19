@@ -34,6 +34,10 @@ class UserSessionManager(
         return sharedPreferences.getString("user_guid","")?:""
     }
 
+    override fun getRolUser(): String {
+        return sharedPreferences.getString("Rol","")?:""
+    }
+
     override fun getUserToken(): String {
         return sharedPreferences.getString("accessToken","")?:""
     }
